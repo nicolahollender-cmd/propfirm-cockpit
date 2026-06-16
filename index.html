@@ -18,9 +18,9 @@
     --text: #E9ECF1;
     --text-dim: #98A2B3;
     --text-faint: #6b7280;
-    --gold: #8d38ff;
-    --gold-deep: #6c1fd6;
-    --green: #155eef;
+    --gold: #F3D382;
+    --gold-deep: #C9A24A;
+    --green: #5ECBA6;
     --red: #E2574C;
     --font-display: 'Montserrat', sans-serif;
     --font-body: 'Inter', sans-serif;
@@ -58,8 +58,8 @@
     font-weight: 700;
     letter-spacing: 0.2em;
     color: var(--gold);
-    background: rgba(141, 56, 255, 0.16);
-    border: 1px solid rgba(141, 56, 255, 0.4);
+    background: rgba(243, 211, 130, 0.16);
+    border: 1px solid rgba(243, 211, 130, 0.4);
     border-radius: 4px;
     padding: 2px 8px;
   }
@@ -79,7 +79,7 @@
     transition: transform 0.15s ease, opacity 0.15s ease;
   }
   .btn:hover { transform: translateY(-1px); }
-  .btn-primary { background: var(--gold); color: #FFFFFF; }
+  .btn-primary { background: var(--gold); color: #1A1404; }
   .btn-ghost { background: transparent; color: var(--text); border-color: var(--border); }
   .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
 
@@ -101,7 +101,7 @@
     height: 72px;
   }
   .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-  .brand img { width: 40px; height: 40px; border-radius: 10px; border: 1px solid rgba(141,56,255,0.35); }
+  .brand img { width: 40px; height: 40px; border-radius: 10px; border: 1px solid rgba(243,211,130,0.35); }
   .brand-text { display: flex; flex-direction: column; line-height: 1.2; }
   .brand-text strong { font-family: var(--font-display); font-size: 14px; letter-spacing: 0.04em; }
   .brand-text span { font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; }
@@ -109,8 +109,11 @@
   .nav-links a { text-decoration: none; color: var(--text-dim); transition: color 0.15s ease; }
   .nav-links a:hover { color: var(--gold); }
   .nav-cta { display: flex; align-items: center; gap: 16px; }
+  .nav-email { text-decoration: none; color: var(--text-dim); font-size: 13px; font-weight: 500; transition: color 0.15s ease; }
+  .nav-email:hover { color: var(--gold); }
   @media (max-width: 760px) {
     .nav-links { display: none; }
+    .nav-email { display: none; }
   }
 
   /* ---------------------------------------------------------------- */
@@ -121,8 +124,8 @@
     padding: 96px 0 72px;
     overflow: hidden;
     background-image:
-      linear-gradient(rgba(141,56,255,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(141,56,255,0.05) 1px, transparent 1px);
+      linear-gradient(rgba(243,211,130,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(243,211,130,0.05) 1px, transparent 1px);
     background-size: 56px 56px;
     background-position: center top;
     -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
@@ -135,7 +138,7 @@
     transform: translateX(-50%);
     width: 900px;
     height: 500px;
-    background: radial-gradient(circle, rgba(141,56,255,0.18) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(243,211,130,0.18) 0%, transparent 70%);
     pointer-events: none;
   }
   .hero-inner {
@@ -171,7 +174,7 @@
     border-radius: 18px;
     border: 1px solid var(--border);
     background: linear-gradient(180deg, #1c2430 0%, #11151c 100%);
-    box-shadow: 0 0 0 1px rgba(141,56,255,0.08), 0 30px 80px -40px rgba(0,0,0,0.8);
+    box-shadow: 0 0 0 1px rgba(243,211,130,0.08), 0 30px 80px -40px rgba(0,0,0,0.8);
     overflow: hidden;
   }
   .bezel-bar {
@@ -240,12 +243,38 @@
     padding: 20px;
   }
   .bezel.locked .lead-gate { display: flex; }
+  .lead-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(8, 10, 14, 0.7);
+    backdrop-filter: blur(4px);
+  }
+  .lead-modal-overlay.show { display: flex; }
+  .lead-modal-overlay .lead-card { position: relative; }
+  .lead-modal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px;
+  }
+  .lead-modal-close:hover { color: var(--text); }
   .lead-card {
     max-width: 440px;
     width: 100%;
     background: var(--panel);
-    border: 1px solid rgba(141,56,255,0.35);
-    box-shadow: 0 0 0 1px rgba(141,56,255,0.08), 0 30px 80px -30px rgba(0,0,0,0.85);
+    border: 1px solid rgba(243,211,130,0.35);
+    box-shadow: 0 0 0 1px rgba(243,211,130,0.08), 0 30px 80px -30px rgba(0,0,0,0.85);
     border-radius: 14px;
     padding: 28px;
     text-align: center;
@@ -253,7 +282,7 @@
   .lead-card .lock-icon {
     width: 40px; height: 40px;
     border-radius: 10px;
-    background: rgba(141,56,255,0.10);
+    background: rgba(243,211,130,0.10);
     color: var(--gold);
     display: flex; align-items: center; justify-content: center;
     margin: 0 auto 14px;
@@ -360,7 +389,7 @@
     width: 40px; height: 40px;
     display: flex; align-items: center; justify-content: center;
     border-radius: 10px;
-    background: rgba(141,56,255,0.10);
+    background: rgba(243,211,130,0.10);
     color: var(--gold);
     margin-bottom: 16px;
   }
@@ -393,7 +422,7 @@
   }
   .price-card.featured {
     border-color: var(--gold);
-    box-shadow: 0 0 0 1px rgba(141,56,255,0.25), 0 20px 60px -30px rgba(141,56,255,0.35);
+    box-shadow: 0 0 0 1px rgba(243,211,130,0.25), 0 20px 60px -30px rgba(243,211,130,0.35);
     position: relative;
   }
   .price-card.featured::before {
@@ -403,7 +432,7 @@
     left: 50%;
     transform: translateX(-50%);
     background: var(--gold);
-    color: #FFFFFF;
+    color: #1A1404;
     font-family: var(--font-mono);
     font-size: 10px;
     font-weight: 700;
@@ -495,10 +524,11 @@
 <body>
 
 <!--
-  Replace https://example.com/buy-pro (appears 4 times below) with your real
-  checkout link — e.g. a GoHighLevel/Stripe payment link. After purchase,
-  send the customer a license key generated with license-key-generator.html;
-  they enter it in the cockpit's Settings tab to unlock Pro.
+  All "Choose Pro" / "Get Pro" links point to the GHL order form:
+  https://offers.livetradingcoaching.com/order-form-fastpassnavigator
+  After purchase, send the customer a license key generated with
+  license-key-generator.html; they enter it in the cockpit's Settings tab
+  to unlock Pro.
 -->
 
 <!-- =================================================================== -->
@@ -520,7 +550,8 @@
       <a href="#pricing">Pricing</a>
     </div>
     <div class="nav-cta">
-      <a href="https://example.com/buy-pro" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Get Pro — $27/mo</a>
+      <a href="mailto:support@livetrading.academy" class="nav-email">support@livetrading.academy</a>
+      <a href="https://offers.livetradingcoaching.com/order-form-fastpassnavigator" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Get Pro — $27/mo</a>
     </div>
   </div>
 </nav>
@@ -539,7 +570,7 @@
       performance coach. Switchable across every major challenge's rule set.
     </p>
     <div class="hero-ctas">
-      <a href="#pricing" class="btn btn-primary">Get Started — it's free</a>
+      <a href="#" class="btn btn-primary js-open-lead">Get Started — it's free</a>
       <a href="#pricing" class="btn btn-ghost">Choose Pro</a>
     </div>
     <div class="hero-trust">NO SIGNUP &nbsp;·&nbsp; NO ACCOUNT &nbsp;·&nbsp; YOUR DATA STAYS IN YOUR BROWSER</div>
@@ -587,7 +618,7 @@
           <li class="included"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>Profit target, daily loss &amp; drawdown calculator</li>
           <li class="excluded"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Performance Analysis, AI Coach &amp; Consistency Tracker</li>
         </ul>
-        <a href="#demo" class="btn btn-ghost">Get Started</a>
+        <a href="#" class="btn btn-ghost js-open-lead">Get Started</a>
       </div>
       <div class="price-card featured">
         <div class="tier">Pro — Best for Struggling Traders</div>
@@ -600,7 +631,7 @@
           <li class="included"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>Consistency Tracker (40% / 50%)</li>
           <li class="included"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>Risk &amp; Positioning Sizer Recommender</li>
         </ul>
-        <a href="https://example.com/buy-pro" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Choose Pro</a>
+        <a href="https://offers.livetradingcoaching.com/order-form-fastpassnavigator" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Choose Pro</a>
       </div>
     </div>
   </div>
@@ -780,20 +811,68 @@
         <a href="#why">Why It Matters</a>
         <a href="#features">Features</a>
         <a href="#pricing">Pricing</a>
-        <a href="https://example.com/buy-pro" target="_blank" rel="noopener noreferrer">Get Pro</a>
+        <a href="https://offers.livetradingcoaching.com/order-form-fastpassnavigator" target="_blank" rel="noopener noreferrer">Get Pro</a>
       </div>
     </div>
     <div class="disclaimer">
-      Evaluation Cockpit is an independent risk-management and journaling tool built by NextGen Investment Group.
+      Evaluation Cockpit is an independent risk-management and journaling tool built by NIG.
       It is not affiliated with, endorsed by, or sponsored by FTMO, Apex Trader Funding, Topstep, The5ers, or any
       other prop trading firm. Rule presets (profit targets, drawdown limits, daily loss limits, and consistency
       thresholds) are approximations of commonly published terms and may not reflect a firm's current rulebook —
       always verify the exact figures for your account size and firm directly with that firm. This tool does not
       guarantee passing an evaluation, does not constitute financial advice, and trading involves risk of loss.
     </div>
-    <div class="copyright">© <span id="year"></span> NextGen Investment Group. All rights reserved.</div>
+    <div class="copyright">
+      Copyrights <span id="year"></span> NIG &nbsp;|&nbsp;
+      <a href="https://www.nig-dubai.com" target="_self" rel="noopener noreferrer">NIG</a> &nbsp;|&nbsp;
+      <a href="https://livetradingcoaching.com/terms" target="_self" rel="noopener noreferrer">Terms &amp; Conditions</a> &nbsp;|&nbsp;
+      <a href="https://livetradingacoaching.com/privacy-policy" target="_self" rel="noopener noreferrer">Privacy Policy</a> &nbsp;|&nbsp;
+      <a href="https://livetradingcoaching.com/disclaimer" target="_self" rel="noopener noreferrer">Disclaimer</a>
+    </div>
   </div>
 </footer>
+
+<!-- =================================================================== -->
+<!-- Free-tier lead capture modal                                        -->
+<!-- =================================================================== -->
+<div class="lead-modal-overlay" id="lead-modal-overlay">
+  <div class="lead-card">
+    <button type="button" class="lead-modal-close" id="lead-modal-close" aria-label="Close">&times;</button>
+    <div class="lock-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
+    <h3>Get instant access — it's free</h3>
+    <p>Tell us where to send updates and we'll take you straight to the free cockpit.</p>
+    <!--
+      Replace LEAD_FORM_ENDPOINT below (in the script at the bottom of this
+      file) with your Formspree (or similar) form endpoint, or a GHL form
+      webhook, to actually receive these submissions.
+    -->
+    <form class="lead-form" id="lead-form">
+      <div>
+        <label for="lead-first">First name</label>
+        <input id="lead-first" name="firstName" type="text" required autocomplete="given-name" />
+      </div>
+      <div>
+        <label for="lead-last">Last name</label>
+        <input id="lead-last" name="lastName" type="text" required autocomplete="family-name" />
+      </div>
+      <div class="full">
+        <label for="lead-email">Email</label>
+        <input id="lead-email" name="email" type="email" required autocomplete="email" />
+      </div>
+      <div class="full">
+        <label for="lead-phone">Cell phone</label>
+        <input id="lead-phone" name="phone" type="tel" required autocomplete="tel" />
+      </div>
+      <!-- Honeypot field for basic spam protection -->
+      <input class="honeypot" type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+      <button type="submit" class="btn btn-primary lead-submit">Unlock the free cockpit</button>
+    </form>
+    <div class="lead-message" id="lead-message"></div>
+    <div class="lead-note">We'll only use this to send product updates — no spam, unsubscribe anytime.</div>
+  </div>
+</div>
 
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
@@ -847,6 +926,67 @@
 
   document.getElementById('cockpit-frame').addEventListener('error', function () {
     document.getElementById('demo-fallback').style.display = 'block';
+  });
+
+  // ------------------------------------------------------------------
+  // Free-tier lead capture modal
+  //
+  // Replace LEAD_FORM_ENDPOINT with your Formspree (or GHL webhook / Getform
+  // / Basin / Web3Forms) endpoint to actually receive these submissions.
+  // With the placeholder left in place, the form still unlocks access
+  // (best-effort submit) — it just won't be recorded anywhere.
+  // ------------------------------------------------------------------
+  const LEAD_FORM_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID';
+  const LEAD_STORAGE_KEY = 'nig-lead-captured';
+
+  var leadOverlay = document.getElementById('lead-modal-overlay');
+  var leadForm = document.getElementById('lead-form');
+  var leadMessage = document.getElementById('lead-message');
+
+  function openLeadModal() {
+    if (localStorage.getItem(LEAD_STORAGE_KEY) === 'true') {
+      document.getElementById('demo').scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    leadOverlay.classList.add('show');
+  }
+  function closeLeadModal() {
+    leadOverlay.classList.remove('show');
+  }
+
+  document.querySelectorAll('.js-open-lead').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      openLeadModal();
+    });
+  });
+  document.getElementById('lead-modal-close').addEventListener('click', closeLeadModal);
+  leadOverlay.addEventListener('click', function (e) {
+    if (e.target === leadOverlay) closeLeadModal();
+  });
+
+  leadForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var submitBtn = leadForm.querySelector('.lead-submit');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Unlocking…';
+
+    var data = new FormData(leadForm);
+
+    fetch(LEAD_FORM_ENDPOINT, {
+      method: 'POST',
+      body: data,
+      headers: { Accept: 'application/json' },
+    }).catch(function () { /* best-effort — proceed regardless */ })
+      .finally(function () {
+        localStorage.setItem(LEAD_STORAGE_KEY, 'true');
+        leadMessage.textContent = "You're in — taking you to the free cockpit now.";
+        leadMessage.className = 'lead-message show';
+        setTimeout(function () {
+          closeLeadModal();
+          document.getElementById('demo').scrollIntoView({ behavior: 'smooth' });
+        }, 700);
+      });
   });
 </script>
 <script>
