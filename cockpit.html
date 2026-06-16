@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NextGen Investment Group — Evaluation Cockpit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+  html, body { margin: 0; background: #11151C; }
+  input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type=number] { -moz-appearance: textfield; }
+  ::selection { background: #F3D38255; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const LOGO_DATA_URI = "data:image/jpeg;base64,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";
+
+
+const { useState, useEffect, useMemo } = React;
+
+// ---------------------------------------------------------------------------
+// Local storage helpers (this standalone file has no Claude artifact storage,
+// so trades & settings are saved in the browser's localStorage instead)
+// ---------------------------------------------------------------------------
+function loadLocal(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch (e) { return fallback; }
+}
+function saveLocal(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* storage unavailable */ }
+}
+
+// ---------------------------------------------------------------------------
+// Minimal inline icon set (avoids a lucide-react CDN dependency)
+// ---------------------------------------------------------------------------
+const IconBase = ({ children, size = 16, style, className }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={style} className={className}>
+    {children}
+  </svg>
+);
+const Plus = (p) => <IconBase {...p}><path d="M5 12h14"/><path d="M12 5v14"/></IconBase>;
+const Trash2 = (p) => <IconBase {...p}><path d="M3 6h18"/><path d="M19 6l-1.5 14a2 2 0 0 1-2 1.8H8.5a2 2 0 0 1-2-1.8L5 6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></IconBase>;
+const Upload = (p) => <IconBase {...p}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></IconBase>;
+const RotateCcw = (p) => <IconBase {...p}><path d="M3 12a9 9 0 1 0 2.7-6.4L3 8"/><path d="M3 3v5h5"/></IconBase>;
+const LayoutDashboard = (p) => <IconBase {...p}><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></IconBase>;
+const Calculator = (p) => <IconBase {...p}><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="8" y2="10.01"/><line x1="12" y1="10" x2="12" y2="10.01"/><line x1="16" y1="10" x2="16" y2="14"/><line x1="8" y1="14" x2="8" y2="14.01"/><line x1="12" y1="14" x2="12" y2="14.01"/><line x1="16" y1="14" x2="16" y2="14.01"/><line x1="8" y1="18" x2="8" y2="18.01"/><line x1="12" y1="18" x2="12" y2="18.01"/><line x1="16" y1="18" x2="16" y2="18.01"/></IconBase>;
+const BookOpen = (p) => <IconBase {...p}><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></IconBase>;
+const SettingsIcon = (p) => <IconBase {...p}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82A1.65 1.65 0 0 0 3 13.09H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V8a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></IconBase>;
+const Gauge = (p) => <IconBase {...p}><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></IconBase>;
+const AlertTriangle = (p) => <IconBase {...p}><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></IconBase>;
+const CheckCircle2 = (p) => <IconBase {...p}><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></IconBase>;
+const Sparkles = (p) => <IconBase {...p}><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></IconBase>;
+const Lock = (p) => <IconBase {...p}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></IconBase>;
+
+// ---------------------------------------------------------------------------
+// Lightweight equity curve chart (no charting library dependency)
+// ---------------------------------------------------------------------------
+function EquityChart({ curve, startingBalance, targetLine, ddLine, ddLabel }) {
+  const width = 800, height = 260, padL = 56, padR = 12, padT = 16, padB = 8;
+  const values = curve.map(c => c.balance).concat([startingBalance, targetLine]);
+  if (ddLine != null) values.push(ddLine);
+  const minV = Math.min(...values), maxV = Math.max(...values);
+  const range = (maxV - minV) || 1;
+  const pad = range * 0.1;
+  const yMin = minV - pad, yMax = maxV + pad;
+  const x = (i) => padL + (i / Math.max(1, curve.length - 1)) * (width - padL - padR);
+  const y = (v) => padT + (1 - (v - yMin) / (yMax - yMin)) * (height - padT - padB);
+  const path = curve.map((c, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(c.balance).toFixed(1)}`).join(' ');
+  const yTicks = [0, 1, 2, 3, 4];
+
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} className="w-full" style={{ height: 260, display: 'block' }} preserveAspectRatio="none">
+      {yTicks.map((i) => {
+        const v = yMin + (i / 4) * (yMax - yMin);
+        const yy = y(v);
+        return (
+          <g key={i}>
+            <line x1={padL} x2={width - padR} y1={yy} y2={yy} stroke={C.border} strokeDasharray="3 3" />
+            <text x={padL - 8} y={yy + 4} textAnchor="end" fontSize="11" fill={C.textFaint} fontFamily={FONT_MONO}>{`$${(v / 1000).toFixed(0)}k`}</text>
+          </g>
+        );
+      })}
+      <line x1={padL} x2={width - padR} y1={y(startingBalance)} y2={y(startingBalance)} stroke={C.textFaint} strokeDasharray="4 4" />
+      <text x={width - padR} y={y(startingBalance) - 4} textAnchor="end" fontSize="10" fill={C.textFaint} fontFamily={FONT_BODY}>Start</text>
+      <line x1={padL} x2={width - padR} y1={y(targetLine)} y2={y(targetLine)} stroke={C.green} strokeDasharray="4 4" />
+      <text x={width - padR} y={y(targetLine) - 4} textAnchor="end" fontSize="10" fill={C.green} fontFamily={FONT_BODY}>Target</text>
+      {ddLine != null && (
+        <>
+          <line x1={padL} x2={width - padR} y1={y(ddLine)} y2={y(ddLine)} stroke={C.red} strokeDasharray="4 4" />
+          <text x={width - padR} y={y(ddLine) + 12} textAnchor="end" fontSize="10" fill={C.red} fontFamily={FONT_BODY}>{ddLabel}</text>
+        </>
+      )}
+      <path d={path} fill="none" stroke={C.amber} strokeWidth="2" />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Theme
+// ---------------------------------------------------------------------------
+const C = {
+  bg: '#11151C',
+  panel: '#1A212C',
+  panel2: '#222B38',
+  border: '#2B3441',
+  text: '#E9E7E2',
+  textDim: '#8B93A3',
+  textFaint: '#5C6573',
+  amber: '#F3D382', // gold accent sampled from the coin's bright rim highlight
+  green: '#5ECBA6',
+  red: '#E2574C',
+  blue: '#5FA8E0',
+};
+const FONT_DISPLAY = "'Space Grotesk', sans-serif";
+const FONT_BODY = "'Inter', sans-serif";
+const FONT_MONO = "'JetBrains Mono', monospace";
+
+// ---------------------------------------------------------------------------
+// Pro licensing — local checksum-validated license keys
+// ---------------------------------------------------------------------------
+// No backend or third-party API needed: a valid key is any 16-character code
+// from LICENSE_ALPHABET, formatted XXXX-XXXX-XXXX-XXXX, where the 16th
+// character is a checksum of the first 15 (see isValidLicenseKey below).
+// Generate batches of valid keys with the companion license-key-generator
+// tool and distribute them however you like (e.g. a GHL workflow that emails
+// the next unused key from a pool after a Stripe purchase).
+//
+// Replace with your checkout link — GHL/Stripe payment link, Gumroad, etc.
+const PRO_CHECKOUT_URL = 'https://example.com/buy-pro';
+
+// Excludes 0/1/I/O to avoid visual ambiguity.
+const LICENSE_ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+
+function normalizeLicenseKey(key) {
+  return String(key || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
+function isValidLicenseKey(key) {
+  const norm = normalizeLicenseKey(key);
+  if (norm.length !== 16) return false;
+  if (![...norm].every(c => LICENSE_ALPHABET.includes(c))) return false;
+  let sum = 0;
+  for (let i = 0; i < 15; i++) {
+    sum += LICENSE_ALPHABET.indexOf(norm[i]) * (i + 1);
+  }
+  const expected = LICENSE_ALPHABET[sum % 32];
+  return norm[15] === expected;
+}
+
+// ---------------------------------------------------------------------------
+// Firm rule presets
+// ---------------------------------------------------------------------------
+const FIRM_PRESETS = {
+  ftmo_p1: { name: 'FTMO — Challenge (Step 1)', profitTargetPct: 10, maxDailyLossPct: 5, maxOverallDrawdownPct: 10, drawdownType: 'static', minTradingDays: 4 },
+  ftmo_p2: { name: 'FTMO — Verification (Step 2)', profitTargetPct: 5, maxDailyLossPct: 5, maxOverallDrawdownPct: 10, drawdownType: 'static', minTradingDays: 4 },
+  the5ers: { name: 'The5ers — Bootcamp (typical)', profitTargetPct: 8, maxDailyLossPct: 5, maxOverallDrawdownPct: 4, drawdownType: 'static', minTradingDays: 0 },
+  apex: { name: 'Apex Trader Funding — Evaluation', profitTargetPct: 6, maxDailyLossPct: null, maxOverallDrawdownPct: 6, drawdownType: 'trailing', minTradingDays: 1 },
+  topstep: { name: 'Topstep — Trading Combine', profitTargetPct: 6, maxDailyLossPct: null, maxOverallDrawdownPct: 6, drawdownType: 'trailing', minTradingDays: 0 },
+  custom: { name: 'Custom rules', profitTargetPct: 10, maxDailyLossPct: 5, maxOverallDrawdownPct: 10, drawdownType: 'static', minTradingDays: 0 },
+};
+
+const PIP_VALUE_PRESETS = [
+  { label: 'Custom value', value: null },
+  { label: 'Forex standard lot ≈ $10 / pip', value: 10 },
+  { label: 'Forex mini lot ≈ $1 / pip', value: 1 },
+  { label: 'Forex micro lot ≈ $0.10 / pip', value: 0.1 },
+  { label: 'Gold, 1 lot ≈ $1 / pip (0.01)', value: 1 },
+  { label: 'Index future, 1 contract ≈ $1 / point', value: 1 },
+];
+
+const COLUMN_ALIASES = {
+  date: ['date', 'open time', 'opentime', 'close time', 'closetime', 'time'],
+  symbol: ['symbol', 'instrument', 'pair', 'market', 'product'],
+  side: ['side', 'type', 'direction', 'action', 'b/s'],
+  size: ['size', 'lots', 'volume', 'quantity', 'qty', 'contracts'],
+  entry: ['entry price', 'entryprice', 'open price', 'openprice'],
+  exit: ['exit price', 'exitprice', 'close price', 'closeprice'],
+  pnl: ['pnl', 'p/l', 'p&l', 'profit', 'net profit', 'net p&l', 'profit/loss', 'realized p/l', 'realized pl'],
+  openTime: ['open time', 'opentime', 'entry time', 'entrytime', 'start time', 'starttime'],
+  closeTime: ['close time', 'closetime', 'exit time', 'exittime', 'end time', 'endtime'],
+  duration: ['duration', 'trade duration', 'holding time', 'holdingtime'],
+  sl: ['stop loss', 'stoploss', 's/l', 'sl'],
+  tp1: ['take profit 1', 'takeprofit1', 'tp 1', 'tp1', 'take profit'],
+  tp2: ['take profit 2', 'takeprofit2', 'tp 2', 'tp2'],
+  feeling: ['feeling/remarks', 'feeling', 'remarks', 'comment', 'comments'],
+};
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+function fmtUSD(n) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  const sign = n < 0 ? '-' : '';
+  return `${sign}$${Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+function fmtPct(n, digits = 1) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return `${n.toFixed(digits)}%`;
+}
+function fmtDuration(min) {
+  if (min === null || min === undefined || isNaN(min)) return '—';
+  if (min < 60) return `${Math.round(min)}m`;
+  const h = Math.floor(min / 60);
+  const m = Math.round(min % 60);
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+}
+function normalizeHeader(h) { return String(h || '').trim().toLowerCase(); }
+function findColumn(headers, aliases) {
+  const norm = headers.map(normalizeHeader);
+  for (const a of aliases) { const i = norm.indexOf(a); if (i !== -1) return headers[i]; }
+  for (let i = 0; i < norm.length; i++) { if (aliases.some(a => norm[i].includes(a))) return headers[i]; }
+  return null;
+}
+function parseMoney(str) {
+  if (typeof str === 'number') return str;
+  let s = String(str ?? '').trim();
+  if (!s) return NaN;
+  let neg = false;
+  if (s.startsWith('(') && s.endsWith(')')) { neg = true; s = s.slice(1, -1); }
+  s = s.replace(/[$,\s]/g, '');
+  if (s.endsWith('%')) s = s.slice(0, -1);
+  let v = parseFloat(s);
+  if (isNaN(v)) return NaN;
+  return neg ? -Math.abs(v) : v;
+}
+function normalizeDate(str) {
+  const s = String(str ?? '').trim();
+  if (!s) return new Date().toISOString().slice(0, 10);
+  const d = new Date(s);
+  if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+  return s.slice(0, 10);
+}
+function uid() { return `t_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`; }
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+
+// ---------------------------------------------------------------------------
+// Evaluation engine — walks trades chronologically and checks both
+// the daily-loss limit and the overall (static or trailing) drawdown limit
+// at every step, the same way a prop firm's risk engine would.
+// ---------------------------------------------------------------------------
+function evaluate(trades, startingBalance, rules) {
+  const sorted = [...trades]
+    .map((t, i) => ({ ...t, _seq: i }))
+    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a._seq - b._seq));
+
+  let balance = startingBalance;
+  let peak = startingBalance;
+  let breach = null;
+  const curve = [{ index: 0, label: 'Start', balance: startingBalance }];
+
+  let curDate = null, dayStart = startingBalance, dayMin = startingBalance;
+
+  sorted.forEach((t, i) => {
+    if (t.date !== curDate) { curDate = t.date; dayStart = balance; dayMin = balance; }
+    balance += Number(t.pnl) || 0;
+    dayMin = Math.min(dayMin, balance);
+    peak = Math.max(peak, balance);
+    curve.push({ index: i + 1, label: t.date, balance });
+
+    if (!breach && rules.maxDailyLossPct != null && dayStart > 0) {
+      const lossPct = ((dayStart - dayMin) / dayStart) * 100;
+      if (lossPct >= rules.maxDailyLossPct) {
+        breach = { type: 'daily', date: t.date, detail: `Daily loss reached ${lossPct.toFixed(2)}% on ${t.date} (limit ${rules.maxDailyLossPct}%)` };
+      }
+    }
+    if (!breach && rules.maxOverallDrawdownPct != null) {
+      const basis = rules.drawdownType === 'trailing' ? peak : startingBalance;
+      const threshold = basis * (1 - rules.maxOverallDrawdownPct / 100);
+      if (balance < threshold) {
+        breach = { type: 'drawdown', date: t.date, detail: `Balance ${fmtUSD(balance)} fell below the ${rules.drawdownType} max-drawdown line (${fmtUSD(threshold)}) on ${t.date}` };
+      }
+    }
+  });
+
+  // Stats for the most recent trading day (drives the "daily loss" gauge)
+  let todayLossAmt = 0, todayLossBasis = balance;
+  if (sorted.length) {
+    const lastDate = sorted[sorted.length - 1].date;
+    let run = startingBalance, dCur = null, dStart = startingBalance, tStart = null, tMin = null;
+    sorted.forEach(t => {
+      if (t.date !== dCur) { dCur = t.date; dStart = run; }
+      run += Number(t.pnl) || 0;
+      if (t.date === lastDate) {
+        if (tStart === null) tStart = dStart;
+        tMin = tMin === null ? run : Math.min(tMin, run);
+      }
+    });
+    todayLossBasis = tStart ?? startingBalance;
+    todayLossAmt = Math.max(0, todayLossBasis - (tMin ?? balance));
+  }
+
+  const profitTargetAmount = startingBalance * (rules.profitTargetPct / 100);
+  const currentProfit = balance - startingBalance;
+  const tradingDays = new Set(sorted.map(t => t.date)).size;
+
+  let status = 'active';
+  if (breach) status = 'breached';
+  else if (currentProfit >= profitTargetAmount && tradingDays >= (rules.minTradingDays || 0)) status = 'passed';
+
+  const ddBasis = rules.drawdownType === 'trailing' ? peak : startingBalance;
+  const ddUsed = rules.drawdownType === 'trailing' ? Math.max(0, peak - balance) : Math.max(0, startingBalance - balance);
+  const ddAllowed = ddBasis * ((rules.maxOverallDrawdownPct || 0) / 100);
+  const dailyAllowed = rules.maxDailyLossPct != null ? todayLossBasis * (rules.maxDailyLossPct / 100) : null;
+
+  return {
+    curve, balance, peak, breach, profitTargetAmount, currentProfit, tradingDays, status,
+    todayLossAmt, dailyAllowed, ddUsed, ddAllowed, sortedTrades: sorted,
+  };
+}
+
+function computeStats(trades) {
+  if (!trades.length) return null;
+  const pnls = trades.map(t => Number(t.pnl) || 0);
+  const wins = pnls.filter(p => p > 0);
+  const losses = pnls.filter(p => p < 0);
+  const total = pnls.reduce((s, p) => s + p, 0);
+  const grossWin = wins.reduce((s, p) => s + p, 0);
+  const grossLoss = Math.abs(losses.reduce((s, p) => s + p, 0));
+  const durations = trades.map(t => t.durationMin).filter(d => d != null && !isNaN(d));
+  return {
+    count: trades.length,
+    winRate: (wins.length / trades.length) * 100,
+    avgWin: wins.length ? grossWin / wins.length : 0,
+    avgLoss: losses.length ? -grossLoss / losses.length : 0,
+    profitFactor: grossLoss > 0 ? grossWin / grossLoss : (grossWin > 0 ? Infinity : 0),
+    total,
+    best: Math.max(...pnls),
+    worst: Math.min(...pnls),
+    avgDurationMin: durations.length ? durations.reduce((s, d) => s + d, 0) / durations.length : null,
+    durationCount: durations.length,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Consistency check — many firms require that no single trading day account
+// for more than ~40-50% of total profit before payout.
+// ---------------------------------------------------------------------------
+function computeConsistency(trades, totalProfit) {
+  if (!trades.length) return { bestDayDate: null, bestDayProfit: 0, consistencyPct: null, totalProfit };
+  const byDate = {};
+  trades.forEach(t => { byDate[t.date] = (byDate[t.date] || 0) + (Number(t.pnl) || 0); });
+  let bestDate = null, bestProfit = -Infinity;
+  Object.entries(byDate).forEach(([date, pnl]) => {
+    if (pnl > bestProfit) { bestProfit = pnl; bestDate = date; }
+  });
+  const consistencyPct = totalProfit > 0 && bestProfit > 0 ? (bestProfit / totalProfit) * 100 : null;
+  return { bestDayDate: bestDate, bestDayProfit: bestProfit, consistencyPct, totalProfit };
+}
+
+// ---------------------------------------------------------------------------
+// Performance Coach — builds the analysis context for either an AI-generated
+// review (via the Anthropic API, available when running inside Claude) or a
+// rule-based local summary (used as a fallback, e.g. in the standalone HTML
+// build where no API access is available).
+// ---------------------------------------------------------------------------
+function buildCoachContext(scopedTrades, stats, evalResult, rules, scopeLabel) {
+  const dailyAllowed = evalResult.dailyAllowed;
+  const dailyLossPct = dailyAllowed ? (evalResult.todayLossAmt / dailyAllowed) * 100 : null;
+  const ddPct = evalResult.ddAllowed > 0 ? (evalResult.ddUsed / evalResult.ddAllowed) * 100 : 0;
+  const profitPct = evalResult.profitTargetAmount > 0 ? (Math.max(0, evalResult.currentProfit) / evalResult.profitTargetAmount) * 100 : 0;
+
+  const data = {
+    scopeLabel,
+    tradeCount: stats ? stats.count : 0,
+    winRate: stats ? stats.winRate : 0,
+    avgWin: stats ? stats.avgWin : 0,
+    avgLoss: stats ? stats.avgLoss : 0,
+    profitFactor: stats ? stats.profitFactor : 0,
+    totalPnl: stats ? stats.total : 0,
+    avgDurationMin: stats ? stats.avgDurationMin : null,
+    durationCount: stats ? stats.durationCount : 0,
+    currentProfit: evalResult.currentProfit,
+    profitTargetAmount: evalResult.profitTargetAmount,
+    profitPct,
+    todayLossAmt: evalResult.todayLossAmt,
+    dailyAllowed,
+    dailyLossPct,
+    ddUsed: evalResult.ddUsed,
+    ddAllowed: evalResult.ddAllowed,
+    ddPct,
+    status: evalResult.status,
+    breachDetail: evalResult.breach ? evalResult.breach.detail : null,
+    firmName: rules.name,
+  };
+
+  const tradeLines = scopedTrades.map(t => {
+    const parts = [
+      t.date, `${t.symbol} ${t.side}`, `size ${t.size ?? '—'}`,
+      `entry ${t.entry ?? '—'}`, `sl ${t.sl ?? '—'}`, `tp1 ${t.tp1 ?? '—'}`, `tp2 ${t.tp2 ?? '—'}`, `exit ${t.exit ?? '—'}`,
+      `P&L ${fmtUSD(t.pnl)}`,
+    ];
+    if (t.durationMin != null) parts.push(`duration ${fmtDuration(t.durationMin)}`);
+    if (t.notes) parts.push(`feeling: ${t.notes}`);
+    return parts.join(' | ');
+  }).join('\n');
+
+  const prompt = `You are a trading performance coach reviewing a prop-firm evaluation account on the rule set "${data.firmName}".
+
+Account stats for ${scopeLabel}:
+- Trades taken: ${data.tradeCount}
+- Win rate: ${data.winRate.toFixed(1)}%
+- Average winning trade: ${fmtUSD(data.avgWin)}
+- Average losing trade: ${fmtUSD(data.avgLoss)}
+- Profit factor: ${data.profitFactor === Infinity ? '∞' : data.profitFactor.toFixed(2)}
+- Net P&L: ${fmtUSD(data.totalPnl)}
+- Average trade duration: ${data.durationCount ? fmtDuration(data.avgDurationMin) : 'not recorded'}
+
+Evaluation status:
+- Account status: ${data.status}
+- Progress to profit target: ${fmtUSD(Math.max(0, data.currentProfit))} of ${fmtUSD(data.profitTargetAmount)} (${data.profitPct.toFixed(0)}%)
+${data.dailyAllowed != null ? `- Daily loss budget used: ${fmtUSD(data.todayLossAmt)} of ${fmtUSD(data.dailyAllowed)} (${data.dailyLossPct.toFixed(0)}%)` : '- No daily loss limit on this rule set'}
+- Drawdown budget used: ${fmtUSD(data.ddUsed)} of ${fmtUSD(data.ddAllowed)} (${data.ddPct.toFixed(0)}%)
+${data.breachDetail ? `- BREACH: ${data.breachDetail}` : ''}
+
+Individual trades:
+${tradeLines || '(none logged)'}
+
+Write a short performance review (under 250 words) using **bold** section headers exactly as named:
+**Summary** — 1-2 sentences on the overall result and risk usage.
+**What's working** — 2-3 bullet points ("- ...") citing specific numbers from above.
+**What to improve** — 2-3 bullet points ("- ...") citing specific numbers, focused on concrete, actionable changes.
+**Focus for next session** — one specific, concrete focus.
+
+Be direct and specific, grounded only in the numbers given. Do not invent details. If there are zero trades, say so and suggest logging trades to enable analysis.`;
+
+  return { prompt, data };
+}
+
+function localCoachSummary(d) {
+  if (d.tradeCount === 0) {
+    return `**Summary**\n\nNo trades logged for ${d.scopeLabel}. Log a few trades in the journal (or import a CSV) to get a performance breakdown here.`;
+  }
+
+  const lines = [];
+  lines.push('**Summary**');
+  lines.push(
+    `For ${d.scopeLabel} you took ${d.tradeCount} trade${d.tradeCount === 1 ? '' : 's'} for a net result of ${fmtUSD(d.totalPnl)} ` +
+    `at a ${d.winRate.toFixed(0)}% win rate. ` +
+    `Drawdown budget used: ${d.ddPct.toFixed(0)}%` +
+    (d.dailyAllowed != null ? `, daily loss budget used: ${d.dailyLossPct.toFixed(0)}%.` : '.')
+  );
+
+  const strengths = [];
+  const issues = [];
+
+  if (d.profitFactor >= 1.5) strengths.push(`Profit factor of ${d.profitFactor === Infinity ? '∞' : d.profitFactor.toFixed(2)} — winners are comfortably outweighing losers.`);
+  if (d.winRate >= 50) strengths.push(`${d.winRate.toFixed(0)}% win rate is solid for this sample.`);
+  if (d.avgWin > 0 && Math.abs(d.avgWin) > Math.abs(d.avgLoss) * 1.3) strengths.push(`Average win (${fmtUSD(d.avgWin)}) is well ahead of average loss (${fmtUSD(d.avgLoss)}) — good reward-to-risk.`);
+  if (d.dailyAllowed != null && d.dailyLossPct < 50) strengths.push(`Only ${d.dailyLossPct.toFixed(0)}% of the daily loss budget used — plenty of room to operate calmly.`);
+  if (d.ddPct < 30) strengths.push(`Drawdown usage at ${d.ddPct.toFixed(0)}% — account health is in good shape.`);
+
+  if (d.profitFactor < 1 && d.tradeCount >= 3) issues.push(`Profit factor is below 1.00 (${d.profitFactor.toFixed(2)}) — losses outweighed wins overall.`);
+  if (d.avgLoss < 0 && Math.abs(d.avgLoss) > Math.abs(d.avgWin) * 1.3) issues.push(`Average loss (${fmtUSD(d.avgLoss)}) is significantly larger than average win (${fmtUSD(d.avgWin)}) — tighten stops or cut losers earlier.`);
+  if (d.winRate < 40 && d.tradeCount >= 5) issues.push(`Win rate of ${d.winRate.toFixed(0)}% is low for ${d.tradeCount} trades — review entry criteria before increasing frequency.`);
+  if (d.dailyAllowed != null && d.dailyLossPct >= 80) issues.push(`${d.dailyLossPct.toFixed(0)}% of today's loss budget is used — strongly consider stopping for the day.`);
+  if (d.ddPct >= 70) issues.push(`Overall drawdown usage is at ${d.ddPct.toFixed(0)}% — reduce risk per trade until the equity curve recovers.`);
+  if (d.durationCount >= 3 && d.avgDurationMin != null && d.avgDurationMin < 5 && d.tradeCount >= 5) issues.push(`Average trade duration is just ${fmtDuration(d.avgDurationMin)} across ${d.tradeCount} trades — this pace can signal overtrading or revenge trading.`);
+  if (d.status === 'breached' && d.breachDetail) issues.push(`This account has breached its rules (${d.breachDetail}) — treat further trades here as practice rather than a recovery attempt.`);
+
+  if (strengths.length) {
+    lines.push("**What's working**");
+    lines.push(strengths.map(s => `- ${s}`).join('\n'));
+  }
+  if (issues.length) {
+    lines.push('**What to improve**');
+    lines.push(issues.map(s => `- ${s}`).join('\n'));
+  } else {
+    lines.push(`No major red flags in the numbers for ${d.scopeLabel} — keep executing the plan.`);
+  }
+
+  lines.push('**Focus for next session**');
+  lines.push(issues[0] || strengths[0] || 'Keep journaling consistently — patterns become clearer with more data.');
+
+  return lines.join('\n\n');
+}
+
+function renderInline(text) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} style={{ color: C.text }}>{part.slice(2, -2)}</strong>;
+    }
+    return <React.Fragment key={i}>{part}</React.Fragment>;
+  });
+}
+
+function CoachOutput({ text }) {
+  const blocks = text.split(/\n\n+/);
+  return (
+    <div className="space-y-3 text-sm leading-relaxed">
+      {blocks.map((block, i) => {
+        const lines = block.split('\n').filter(Boolean);
+        const isHeading = lines.length === 1 && /^\*\*.+\*\*$/.test(lines[0].trim());
+        if (isHeading) {
+          return <div key={i} className="text-xs uppercase tracking-[0.2em] pt-1 first:pt-0" style={{ color: C.amber, fontFamily: FONT_BODY }}>{lines[0].trim().slice(2, -2)}</div>;
+        }
+        const isList = lines.length > 0 && lines.every(l => l.trim().startsWith('- '));
+        if (isList) {
+          return (
+            <ul key={i} className="space-y-1.5 list-disc pl-5" style={{ color: C.textDim }}>
+              {lines.map((l, j) => <li key={j}>{renderInline(l.trim().slice(2))}</li>)}
+            </ul>
+          );
+        }
+        return <p key={i} style={{ color: C.textDim }}>{renderInline(block)}</p>;
+      })}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Small components
+// ---------------------------------------------------------------------------
+function TapeGauge({ label, value, max, mode, valueLabel, capLabel, sub }) {
+  const pct = max > 0 ? Math.min(100, Math.max(0, (value / max) * 100)) : 0;
+  let fillColor;
+  if (mode === 'risk') fillColor = pct < 60 ? C.green : pct < 85 ? C.amber : C.red;
+  else fillColor = pct >= 60 ? C.green : C.amber;
+
+  return (
+    <div className="rounded-lg p-4" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+      <div className="flex items-baseline justify-between mb-3 gap-2">
+        <span className="text-[11px] font-medium uppercase tracking-[0.2em]" style={{ color: C.textDim, fontFamily: FONT_BODY }}>{label}</span>
+        <span className="text-lg font-semibold whitespace-nowrap" style={{ color: C.text, fontFamily: FONT_MONO }}>{valueLabel}</span>
+      </div>
+      <div className="relative h-2 rounded-full overflow-hidden" style={{ background: C.panel2 }}>
+        <div className="absolute inset-y-0 left-0 rounded-full" style={{ width: `${pct}%`, background: fillColor, boxShadow: `0 0 10px ${fillColor}66`, transition: 'width 0.4s ease' }} />
+        <div className="absolute inset-0 flex justify-between">
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="w-px h-full" style={{ background: i === 0 || i === 9 ? 'transparent' : C.bg, opacity: 0.5 }} />
+          ))}
+        </div>
+      </div>
+      <div className="flex justify-between mt-1.5 text-[10px]" style={{ color: C.textFaint, fontFamily: FONT_MONO }}>
+        <span>0</span>
+        <span>{capLabel}</span>
+      </div>
+      {sub && <div className="mt-2 text-xs leading-snug" style={{ color: C.textDim }}>{sub}</div>}
+    </div>
+  );
+}
+
+function StatusPill({ status, breach }) {
+  const map = {
+    passed: { color: C.green, label: 'TARGET HIT', Icon: CheckCircle2 },
+    breached: { color: C.red, label: 'BREACHED', Icon: AlertTriangle },
+    active: { color: C.amber, label: 'IN PROGRESS', Icon: Gauge },
+  };
+  const m = map[status];
+  const { Icon } = m;
+  return (
+    <div className="flex flex-col items-end gap-1.5">
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: `${m.color}1A`, border: `1px solid ${m.color}55` }}>
+        <Icon size={14} style={{ color: m.color }} />
+        <span className="text-xs font-semibold tracking-widest" style={{ color: m.color, fontFamily: FONT_BODY }}>{m.label}</span>
+      </div>
+      {breach && <span className="text-[11px] max-w-[280px] text-right leading-snug" style={{ color: C.textDim }}>{breach.detail}</span>}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ProGate — blurs and locks a feature behind a Pro license key
+// ---------------------------------------------------------------------------
+function ProGate({ unlocked, title, onUnlock, children }) {
+  if (unlocked) return <>{children}</>;
+  return (
+    <div className="relative rounded-lg overflow-hidden">
+      <div className="opacity-25 pointer-events-none select-none" style={{ filter: 'blur(3px)' }}>
+        {children}
+      </div>
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 py-6 text-center" style={{ background: `${C.bg}CC` }}>
+        <Lock size={18} style={{ color: C.amber }} />
+        <div className="text-sm font-semibold" style={{ color: C.text, fontFamily: FONT_DISPLAY }}>{title}</div>
+        <div className="text-xs max-w-xs" style={{ color: C.textDim }}>This is a Pro feature — unlock it with a license key.</div>
+        <button onClick={onUnlock} className="mt-1 text-xs px-3 py-1.5 rounded-md font-semibold" style={{ background: C.amber, color: '#1A1404' }}>
+          Enter license key
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function FieldLabel({ children }) {
+  return <label className="block text-[11px] uppercase tracking-[0.15em] mb-1" style={{ color: C.textDim, fontFamily: FONT_BODY }}>{children}</label>;
+}
+
+const inputStyle = {
+  background: C.panel2,
+  border: `1px solid ${C.border}`,
+  color: C.text,
+  fontFamily: FONT_MONO,
+};
+const inputClass = 'w-full rounded-md px-3 py-2 text-sm outline-none focus:ring-2';
+
+// ---------------------------------------------------------------------------
+// Main app
+// ---------------------------------------------------------------------------
+function App() {
+  const [loaded, setLoaded] = useState(false);
+  const [tab, setTab] = useState('dashboard');
+  const [firmId, setFirmId] = useState('ftmo_p1');
+  const [rules, setRules] = useState({ ...FIRM_PRESETS.ftmo_p1 });
+  const [startingBalance, setStartingBalance] = useState(100000);
+  const [trades, setTrades] = useState([]);
+  const [importMsg, setImportMsg] = useState(null);
+
+  // Pro license
+  const [licenseUnlocked, setLicenseUnlocked] = useState(false);
+  const [licenseKey, setLicenseKey] = useState('');
+  const [licenseMessage, setLicenseMessage] = useState(null);
+
+  // Load (persisted in this browser via localStorage)
+  useEffect(() => {
+    const s = loadLocal('pf-settings', null);
+    if (s) {
+      if (s.firmId) setFirmId(s.firmId);
+      if (s.rules) setRules(s.rules);
+      if (s.startingBalance != null) setStartingBalance(s.startingBalance);
+    }
+    const t = loadLocal('pf-trades', null);
+    if (t) setTrades(t);
+    setLoaded(true);
+  }, []);
+
+  // Save
+  useEffect(() => {
+    if (!loaded) return;
+    saveLocal('pf-settings', { firmId, rules, startingBalance });
+  }, [firmId, rules, startingBalance, loaded]);
+  useEffect(() => {
+    if (!loaded) return;
+    saveLocal('pf-trades', trades);
+  }, [trades, loaded]);
+
+  // Load license (persisted via localStorage)
+  useEffect(() => {
+    const l = loadLocal('pf-license', null);
+    if (l) {
+      if (l.unlocked) setLicenseUnlocked(true);
+      if (l.key) setLicenseKey(l.key);
+    }
+  }, []);
+
+  // Save license
+  useEffect(() => {
+    saveLocal('pf-license', { key: licenseKey, unlocked: licenseUnlocked });
+  }, [licenseKey, licenseUnlocked]);
+
+  function verifyLicense() {
+    const key = licenseKey.trim();
+    if (!key) {
+      setLicenseMessage({ type: 'error', text: 'Enter a license key first.' });
+      return;
+    }
+    if (isValidLicenseKey(key)) {
+      setLicenseKey(normalizeLicenseKey(key));
+      setLicenseUnlocked(true);
+      setLicenseMessage({ type: 'success', text: 'License key accepted — Pro features unlocked. Thank you!' });
+    } else {
+      setLicenseUnlocked(false);
+      setLicenseMessage({ type: 'error', text: "That key doesn't look right — double-check it against your purchase email." });
+    }
+  }
+
+  function removeLicense() {
+    setLicenseUnlocked(false);
+    setLicenseKey('');
+    setLicenseMessage(null);
+  }
+
+  const evalResult = useMemo(() => evaluate(trades, startingBalance, rules), [trades, startingBalance, rules]);
+  const stats = useMemo(() => computeStats(trades), [trades]);
+  const consistency = useMemo(() => computeConsistency(trades, evalResult.currentProfit), [trades, evalResult.currentProfit]);
+
+  // -------------------------------------------------------------------------
+  // Performance coach
+  // -------------------------------------------------------------------------
+  const [coachScope, setCoachScope] = useState('today');
+  const [coachLoading, setCoachLoading] = useState(false);
+  const [coachSummary, setCoachSummary] = useState(null);
+  const [coachSource, setCoachSource] = useState(null);
+
+  const latestTradeDate = trades.length ? [...trades].map(t => t.date).sort().slice(-1)[0] : null;
+  const scopedTrades = useMemo(() => {
+    if (coachScope === 'today') return trades.filter(t => t.date === latestTradeDate);
+    return trades;
+  }, [trades, coachScope, latestTradeDate]);
+  const scopeLabel = coachScope === 'today'
+    ? (latestTradeDate ? `today's session (${latestTradeDate})` : "today's session")
+    : 'all logged trades';
+
+  async function generateSummary() {
+    setCoachLoading(true);
+    setCoachSummary(null);
+    setCoachSource(null);
+    const scopedStats = computeStats(scopedTrades);
+    const { prompt, data } = buildCoachContext(scopedTrades, scopedStats, evalResult, rules, scopeLabel);
+    try {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: prompt }],
+        }),
+      });
+      if (!resp.ok) throw new Error('API error');
+      const json = await resp.json();
+      const text = (json.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n').trim();
+      if (!text) throw new Error('Empty response');
+      setCoachSummary(text);
+      setCoachSource('ai');
+    } catch (e) {
+      setCoachSummary(localCoachSummary(data));
+      setCoachSource('local');
+    } finally {
+      setCoachLoading(false);
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Trade journal handlers
+  // -------------------------------------------------------------------------
+  const [newTrade, setNewTrade] = useState({
+    date: todayStr(), symbol: '', side: 'Buy', size: '', entry: '', sl: '', tp1: '', tp2: '', exit: '', pnl: '', durationMin: '', notes: '',
+  });
+  function addTrade() {
+    const pnl = parseMoney(newTrade.pnl);
+    if (isNaN(pnl)) return;
+    setTrades(prev => [...prev, {
+      id: uid(),
+      date: newTrade.date || todayStr(),
+      symbol: newTrade.symbol || '—',
+      side: newTrade.side,
+      size: newTrade.size === '' ? null : parseFloat(newTrade.size),
+      entry: newTrade.entry === '' ? null : parseFloat(newTrade.entry),
+      sl: newTrade.sl === '' ? null : parseFloat(newTrade.sl),
+      tp1: newTrade.tp1 === '' ? null : parseFloat(newTrade.tp1),
+      tp2: newTrade.tp2 === '' ? null : parseFloat(newTrade.tp2),
+      exit: newTrade.exit === '' ? null : parseFloat(newTrade.exit),
+      pnl,
+      durationMin: newTrade.durationMin === '' ? null : parseFloat(newTrade.durationMin),
+      notes: newTrade.notes,
+    }]);
+    setNewTrade({ date: todayStr(), symbol: '', side: 'Buy', size: '', entry: '', sl: '', tp1: '', tp2: '', exit: '', pnl: '', durationMin: '', notes: '' });
+  }
+  function removeTrade(id) {
+    setTrades(prev => prev.filter(t => t.id !== id));
+  }
+  function handleCSV(file) {
+    setImportMsg(null);
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        const headers = results.meta.fields || [];
+        const dateCol = findColumn(headers, COLUMN_ALIASES.date);
+        const symbolCol = findColumn(headers, COLUMN_ALIASES.symbol);
+        const sideCol = findColumn(headers, COLUMN_ALIASES.side);
+        const sizeCol = findColumn(headers, COLUMN_ALIASES.size);
+        const entryCol = findColumn(headers, COLUMN_ALIASES.entry);
+        const exitCol = findColumn(headers, COLUMN_ALIASES.exit);
+        const pnlCol = findColumn(headers, COLUMN_ALIASES.pnl);
+        const openTimeCol = findColumn(headers, COLUMN_ALIASES.openTime);
+        const closeTimeCol = findColumn(headers, COLUMN_ALIASES.closeTime);
+        const durationCol = findColumn(headers, COLUMN_ALIASES.duration);
+        const slCol = findColumn(headers, COLUMN_ALIASES.sl);
+        const tp1Col = findColumn(headers, COLUMN_ALIASES.tp1);
+        const tp2Col = findColumn(headers, COLUMN_ALIASES.tp2);
+        const feelingCol = findColumn(headers, COLUMN_ALIASES.feeling);
+
+        if (!pnlCol) {
+          setImportMsg({ type: 'error', text: 'No profit/loss column found. Expected a header like "P&L", "Profit", or "Net P&L".' });
+          return;
+        }
+        const imported = [];
+        results.data.forEach(row => {
+          const pnl = parseMoney(row[pnlCol]);
+          if (isNaN(pnl)) return;
+
+          let durationMin = null;
+          if (durationCol) {
+            const v = parseFloat(String(row[durationCol]).replace(/[^0-9.]/g, ''));
+            if (!isNaN(v)) durationMin = v;
+          } else if (openTimeCol && closeTimeCol) {
+            const start = new Date(row[openTimeCol]);
+            const end = new Date(row[closeTimeCol]);
+            if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+              const diff = (end.getTime() - start.getTime()) / 60000;
+              if (diff >= 0) durationMin = diff;
+            }
+          }
+
+          imported.push({
+            id: uid(),
+            date: dateCol ? normalizeDate(row[dateCol]) : todayStr(),
+            symbol: symbolCol ? String(row[symbolCol] || '—') : '—',
+            side: sideCol ? String(row[sideCol] || '—') : '—',
+            size: sizeCol ? (parseFloat(row[sizeCol]) || null) : null,
+            entry: entryCol ? (parseMoney(row[entryCol]) || null) : null,
+            sl: slCol ? (parseMoney(row[slCol]) || null) : null,
+            tp1: tp1Col ? (parseMoney(row[tp1Col]) || null) : null,
+            tp2: tp2Col ? (parseMoney(row[tp2Col]) || null) : null,
+            exit: exitCol ? (parseMoney(row[exitCol]) || null) : null,
+            pnl,
+            durationMin,
+            notes: feelingCol ? String(row[feelingCol] || '') : 'Imported',
+          });
+        });
+        if (!imported.length) {
+          setImportMsg({ type: 'error', text: 'No valid rows found in that file.' });
+          return;
+        }
+        setTrades(prev => [...prev, ...imported]);
+        setImportMsg({ type: 'success', text: `Imported ${imported.length} trade${imported.length === 1 ? '' : 's'}.` });
+      },
+      error: (err) => setImportMsg({ type: 'error', text: `Could not read CSV: ${err.message}` }),
+    });
+  }
+
+  // -------------------------------------------------------------------------
+  // Calculator state
+  // -------------------------------------------------------------------------
+  const [calcBalance, setCalcBalance] = useState(null);
+  const [calcRiskPct, setCalcRiskPct] = useState(1);
+  const [calcStopLoss, setCalcStopLoss] = useState(20);
+  const [calcPipValue, setCalcPipValue] = useState(10);
+  const [tradesToSurvive, setTradesToSurvive] = useState(3);
+
+  const effectiveBalance = calcBalance != null ? calcBalance : evalResult.balance;
+  const riskAmount = effectiveBalance * (calcRiskPct / 100);
+  const positionSize = calcStopLoss > 0 && calcPipValue > 0 ? riskAmount / (calcStopLoss * calcPipValue) : 0;
+
+  const remainingDaily = evalResult.dailyAllowed != null ? Math.max(0, evalResult.dailyAllowed - evalResult.todayLossAmt) : null;
+  const remainingDD = Math.max(0, evalResult.ddAllowed - evalResult.ddUsed);
+  const tradesLeftDaily = remainingDaily != null && riskAmount > 0 ? Math.floor(remainingDaily / riskAmount) : null;
+  const tradesLeftDD = riskAmount > 0 ? Math.floor(remainingDD / riskAmount) : null;
+
+  // Recommended max risk per trade: the firm's loss limits, split across a
+  // number of trades you'd want to be able to survive in a losing streak.
+  const survive = Math.max(1, tradesToSurvive || 1);
+  const maxRiskFromDaily = evalResult.dailyAllowed != null ? evalResult.dailyAllowed / survive : null;
+  const maxRiskFromDD = evalResult.ddAllowed > 0 ? evalResult.ddAllowed / survive : null;
+  const riskCandidates = [maxRiskFromDaily, maxRiskFromDD].filter(v => v != null && v > 0);
+  const recommendedMaxRisk = riskCandidates.length ? Math.min(...riskCandidates) : null;
+  const recommendedMaxRiskPct = recommendedMaxRisk != null && effectiveBalance > 0 ? (recommendedMaxRisk / effectiveBalance) * 100 : null;
+  const bindingConstraint = recommendedMaxRisk != null && recommendedMaxRisk === maxRiskFromDaily ? 'daily loss limit' : 'max drawdown limit';
+
+  // -------------------------------------------------------------------------
+  // Settings handlers
+  // -------------------------------------------------------------------------
+  function handleFirmChange(id) {
+    setFirmId(id);
+    setRules({ ...FIRM_PRESETS[id] });
+  }
+  function resetAll() {
+    if (!window.confirm('This clears all trades and resets settings to FTMO defaults. Continue?')) return;
+    setTrades([]);
+    handleFirmChange('ftmo_p1');
+    setStartingBalance(100000);
+  }
+
+  // -------------------------------------------------------------------------
+  // Derived display values
+  // -------------------------------------------------------------------------
+  const profitValue = Math.max(0, evalResult.currentProfit);
+  const tradingDaysMax = Math.max(rules.minTradingDays || 0, 1);
+  const ddThresholdValue = startingBalance - (rules.drawdownType === 'static'
+    ? startingBalance * ((rules.maxOverallDrawdownPct || 0) / 100)
+    : evalResult.peak * ((rules.maxOverallDrawdownPct || 0) / 100) - (evalResult.peak - startingBalance));
+
+  const tabs = [
+    { id: 'dashboard', label: 'Dashboard', Icon: LayoutDashboard },
+    { id: 'coach', label: 'Performance Coach', Icon: Sparkles },
+    { id: 'calculator', label: 'Position Calculator', Icon: Calculator },
+    { id: 'journal', label: 'Trade Journal', Icon: BookOpen },
+    { id: 'settings', label: 'Rules & Settings', Icon: SettingsIcon },
+  ];
+
+  return (
+    <div style={{ background: C.bg, color: C.text, fontFamily: FONT_BODY, minHeight: '100%' }} className="p-4 md:p-6">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap');
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        ::selection { background: ${C.amber}55; }
+      `}</style>
+
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-5">
+        <div className="flex items-center gap-3">
+          <img
+            src={LOGO_DATA_URI}
+            alt="NextGen Investment Group logo"
+            className="w-16 h-16 md:w-20 md:h-20 rounded-xl shrink-0 object-cover"
+            style={{ border: `1.5px solid ${C.amber}40` }}
+          />
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.35em] mb-1" style={{ color: C.amber, fontFamily: FONT_BODY }}>Prop Firm</div>
+            <h1 className="text-2xl md:text-3xl font-bold leading-none" style={{ fontFamily: FONT_DISPLAY }}>Evaluation Cockpit</h1>
+            <div className="mt-1 text-sm" style={{ color: C.textDim }}>{rules.name || FIRM_PRESETS[firmId]?.name}</div>
+          </div>
+        </div>
+        <div className="flex flex-col items-end gap-2">
+          <StatusPill status={evalResult.status} breach={evalResult.breach} />
+          {licenseUnlocked ? (
+            <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full tracking-widest" style={{ background: `${C.amber}1A`, color: C.amber, border: `1px solid ${C.amber}55` }}>
+              <Sparkles size={11} /> PRO
+            </span>
+          ) : (
+            <button onClick={() => setTab('settings')} className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full tracking-widest" style={{ color: C.textDim, border: `1px solid ${C.border}` }}>
+              <Lock size={11} /> Unlock Pro
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 mb-5 overflow-x-auto pb-1" style={{ borderBottom: `1px solid ${C.border}` }}>
+        {tabs.map(({ id, label, Icon }) => (
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className="flex items-center gap-2 px-3 md:px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors"
+            style={{
+              color: tab === id ? C.amber : C.textDim,
+              borderBottom: tab === id ? `2px solid ${C.amber}` : '2px solid transparent',
+              fontFamily: FONT_BODY,
+            }}
+          >
+            <Icon size={15} />
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* ----------------------------------------------------------------- */}
+      {/* Dashboard */}
+      {/* ----------------------------------------------------------------- */}
+      {tab === 'dashboard' && (
+        <div className="space-y-5">
+          {/* Top summary strip */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { label: 'Starting Balance', value: fmtUSD(startingBalance) },
+              { label: 'Current Balance', value: fmtUSD(evalResult.balance), color: evalResult.balance >= startingBalance ? C.green : C.red },
+              { label: 'Profit / Loss', value: fmtUSD(evalResult.currentProfit), color: evalResult.currentProfit >= 0 ? C.green : C.red },
+              { label: 'Trading Days', value: evalResult.tradingDays },
+            ].map((c, i) => (
+              <div key={i} className="rounded-lg p-4" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+                <div className="text-[11px] uppercase tracking-[0.2em] mb-1" style={{ color: C.textDim }}>{c.label}</div>
+                <div className="text-xl font-semibold" style={{ fontFamily: FONT_MONO, color: c.color || C.text }}>{c.value}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Trade performance strip */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            {[
+              { label: 'Number of Trades', value: stats ? stats.count : 0 },
+              { label: 'Win Rate', value: stats ? fmtPct(stats.winRate) : '—' },
+              { label: 'Avg Winning Trade', value: stats ? fmtUSD(stats.avgWin) : '—', color: C.green },
+              { label: 'Avg Losing Trade', value: stats ? fmtUSD(stats.avgLoss) : '—', color: C.red },
+              { label: 'Avg Trade Duration', value: stats && stats.durationCount ? fmtDuration(stats.avgDurationMin) : '—' },
+            ].map((c, i) => (
+              <div key={i} className="rounded-lg p-4" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+                <div className="text-[11px] uppercase tracking-[0.2em] mb-1" style={{ color: C.textDim }}>{c.label}</div>
+                <div className="text-xl font-semibold" style={{ fontFamily: FONT_MONO, color: c.color || C.text }}>{c.value}</div>
+              </div>
+            ))}
+          </div>
+          {stats && !stats.durationCount && (
+            <p className="text-xs -mt-2" style={{ color: C.textFaint }}>
+              Avg trade duration shows once trades include timing data — add it via "Duration (min)" when logging a trade, or import a CSV with open/close time columns.
+            </p>
+          )}
+
+          {/* Gauges */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            <TapeGauge
+              label="Profit Target"
+              value={profitValue}
+              max={evalResult.profitTargetAmount}
+              mode="progress"
+              valueLabel={`${fmtPct((profitValue / (evalResult.profitTargetAmount || 1)) * 100)}`}
+              capLabel={fmtUSD(evalResult.profitTargetAmount)}
+              sub={`${fmtUSD(profitValue)} of ${fmtUSD(evalResult.profitTargetAmount)} target (${rules.profitTargetPct}%)`}
+            />
+            {rules.maxDailyLossPct != null ? (
+              <TapeGauge
+                label="Daily Loss Used"
+                value={evalResult.todayLossAmt}
+                max={evalResult.dailyAllowed}
+                mode="risk"
+                valueLabel={fmtPct((evalResult.todayLossAmt / (evalResult.dailyAllowed || 1)) * 100)}
+                capLabel={`${rules.maxDailyLossPct}%`}
+                sub={`${fmtUSD(evalResult.todayLossAmt)} used of ${fmtUSD(evalResult.dailyAllowed)} today's budget`}
+              />
+            ) : (
+              <div className="rounded-lg p-4 flex flex-col justify-center" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+                <div className="text-[11px] uppercase tracking-[0.2em] mb-2" style={{ color: C.textDim }}>Daily Loss Limit</div>
+                <div className="text-sm" style={{ color: C.textDim }}>No daily loss limit for this firm's rule set.</div>
+              </div>
+            )}
+            <TapeGauge
+              label={`Max Drawdown (${rules.drawdownType})`}
+              value={evalResult.ddUsed}
+              max={evalResult.ddAllowed}
+              mode="risk"
+              valueLabel={fmtPct((evalResult.ddUsed / (evalResult.ddAllowed || 1)) * 100)}
+              capLabel={`${rules.maxOverallDrawdownPct}%`}
+              sub={`${fmtUSD(evalResult.ddUsed)} drawdown of ${fmtUSD(evalResult.ddAllowed)} allowed`}
+            />
+            <TapeGauge
+              label="Trading Days"
+              value={evalResult.tradingDays}
+              max={tradingDaysMax}
+              mode="progress"
+              valueLabel={`${evalResult.tradingDays}`}
+              capLabel={rules.minTradingDays > 0 ? `${rules.minTradingDays} min` : 'none req.'}
+              sub={rules.minTradingDays > 0
+                ? `${Math.max(0, rules.minTradingDays - evalResult.tradingDays)} more day(s) needed`
+                : 'No minimum trading-day requirement.'}
+            />
+          </div>
+
+          {/* Consistency check */}
+          <div className="rounded-lg p-4" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="text-[11px] uppercase tracking-[0.2em]" style={{ color: C.textDim }}>Consistency Check</div>
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded tracking-widest" style={{ background: `${C.amber}22`, color: C.amber }}>PRO</span>
+            </div>
+            <ProGate unlocked={licenseUnlocked} title="Consistency tracking is a Pro feature" onUnlock={() => setTab('settings')}>
+              {consistency.consistencyPct == null ? (
+                <div className="text-sm" style={{ color: C.textDim }}>
+                  Becomes available once the account is net profitable and has at least one profitable trading day.
+                  Many firms cap how much of total profit a single day may account for before payout — typically 40-50%.
+                </div>
+              ) : (
+                <>
+                  <p className="text-xs mb-3 leading-relaxed" style={{ color: C.textDim }}>
+                    Best day ({consistency.bestDayDate}) made <span style={{ color: C.text, fontFamily: FONT_MONO }}>{fmtUSD(consistency.bestDayProfit)}</span> —
+                    that's <span style={{ color: C.text, fontFamily: FONT_MONO }}>{fmtPct(consistency.consistencyPct)}</span> of total profit
+                    ({fmtUSD(consistency.totalProfit)}). Many firms require this to stay under 40-50% of total profit before payout —
+                    verify the exact figure in your firm's rulebook.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <TapeGauge
+                      label="40% Consistency Rule"
+                      value={consistency.consistencyPct}
+                      max={40}
+                      mode="risk"
+                      valueLabel={fmtPct(consistency.consistencyPct)}
+                      capLabel="40%"
+                      sub={consistency.consistencyPct <= 40 ? 'Within a 40% consistency cap.' : 'Exceeds a 40% consistency cap.'}
+                    />
+                    <TapeGauge
+                      label="50% Consistency Rule"
+                      value={consistency.consistencyPct}
+                      max={50}
+                      mode="risk"
+                      valueLabel={fmtPct(consistency.consistencyPct)}
+                      capLabel="50%"
+                      sub={consistency.consistencyPct <= 50 ? 'Within a 50% consistency cap.' : 'Exceeds a 50% consistency cap.'}
+                    />
+                  </div>
+                </>
+              )}
+            </ProGate>
+          </div>
+
+          {/* Equity curve */}
+          <div className="rounded-lg p-4" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+            <div className="text-[11px] uppercase tracking-[0.2em] mb-3" style={{ color: C.textDim }}>Equity Curve</div>
+            {evalResult.curve.length > 1 ? (
+              <EquityChart
+                curve={evalResult.curve}
+                startingBalance={startingBalance}
+                targetLine={startingBalance + evalResult.profitTargetAmount}
+                ddLine={rules.maxOverallDrawdownPct != null
+                  ? (rules.drawdownType === 'static'
+                      ? startingBalance * (1 - rules.maxOverallDrawdownPct / 100)
+                      : evalResult.peak * (1 - rules.maxOverallDrawdownPct / 100))
+                  : null}
+                ddLabel={rules.drawdownType === 'static' ? 'Max DD' : 'Current DD line'}
+              />
+            ) : (
+              <div className="text-sm py-10 text-center" style={{ color: C.textDim }}>Log a trade to see your equity curve.</div>
+            )}
+          </div>
+
+          <p className="text-xs leading-relaxed" style={{ color: C.textFaint }}>
+            Rule presets are approximate starting points for common evaluation models — exact percentages, drawdown
+            calculation methods, and trading-day requirements vary by firm, account size, and change over time.
+            Always verify against your firm's current rulebook in the Rules &amp; Settings tab. This tool does not
+            guarantee passing an evaluation and is not financial advice.
+          </p>
+        </div>
+      )}
+
+      {/* ----------------------------------------------------------------- */}
+      {/* Position Calculator */}
+      {/* ----------------------------------------------------------------- */}
+      {tab === 'calculator' && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div className="rounded-lg p-5 space-y-4" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+            <div className="text-sm font-semibold" style={{ fontFamily: FONT_DISPLAY }}>Position Size & Risk</div>
+
+            <div>
+              <FieldLabel>Account balance ($)</FieldLabel>
+              <input type="number" className={inputClass} style={inputStyle}
+                placeholder={evalResult.balance.toFixed(2)}
+                value={calcBalance ?? ''}
+                onChange={e => setCalcBalance(e.target.value === '' ? null : parseFloat(e.target.value))} />
+              <div className="text-[11px] mt-1" style={{ color: C.textFaint }}>Leave blank to use your current balance ({fmtUSD(evalResult.balance)}).</div>
+            </div>
+
+            <div>
+              <FieldLabel>Risk per trade (%)</FieldLabel>
+              <input type="number" step="0.1" className={inputClass} style={inputStyle}
+                value={calcRiskPct} onChange={e => setCalcRiskPct(parseFloat(e.target.value) || 0)} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <FieldLabel>Stop loss (pips / points)</FieldLabel>
+                <input type="number" className={inputClass} style={inputStyle}
+                  value={calcStopLoss} onChange={e => setCalcStopLoss(parseFloat(e.target.value) || 0)} />
+              </div>
+              <div>
+                <FieldLabel>Value per pip / point ($)</FieldLabel>
+                <input type="number" step="0.01" className={inputClass} style={inputStyle}
+                  value={calcPipValue} onChange={e => setCalcPipValue(parseFloat(e.target.value) || 0)} />
+              </div>
+            </div>
+
+            <div>
+              <FieldLabel>Quick presets</FieldLabel>
+              <select className={inputClass} style={{ ...inputStyle, fontFamily: FONT_BODY }}
+                onChange={e => { const v = parseFloat(e.target.value); if (!isNaN(v)) setCalcPipValue(v); }}>
+                {PIP_VALUE_PRESETS.map((p, i) => <option key={i} value={p.value ?? ''}>{p.label}</option>)}
+              </select>
+              <div className="text-[11px] mt-1 leading-relaxed" style={{ color: C.textFaint }}>
+                Contract values vary by instrument and broker — confirm the exact pip/point value in your
+                platform's contract specifications before sizing a live trade.
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="rounded-lg p-5" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+              <div className="text-[11px] uppercase tracking-[0.2em] mb-1" style={{ color: C.textDim }}>Risk amount this trade</div>
+              <div className="text-3xl font-bold" style={{ fontFamily: FONT_MONO, color: C.amber }}>{fmtUSD(riskAmount)}</div>
+              <div className="text-xs mt-1" style={{ color: C.textDim }}>{calcRiskPct}% of {fmtUSD(effectiveBalance)}</div>
+            </div>
+
+            <div className="rounded-lg p-5" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+              <div className="text-[11px] uppercase tracking-[0.2em] mb-1" style={{ color: C.textDim }}>Suggested position size</div>
+              <div className="text-3xl font-bold" style={{ fontFamily: FONT_MONO, color: C.text }}>
+                {positionSize > 0 ? positionSize.toFixed(2) : '—'}
+                <span className="text-base font-normal ml-2" style={{ color: C.textDim }}>lots / contracts</span>
+              </div>
+              <div className="text-xs mt-1" style={{ color: C.textDim }}>
+                = Risk amount ÷ (Stop loss × Value per pip)
+              </div>
+            </div>
+
+            <div className="rounded-lg p-5 space-y-2" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+              <div className="text-[11px] uppercase tracking-[0.2em] mb-1" style={{ color: C.textDim }}>Budget check at this risk size</div>
+              <div className="flex justify-between text-sm">
+                <span style={{ color: C.textDim }}>Trades left today before daily limit</span>
+                <span style={{ fontFamily: FONT_MONO, color: tradesLeftDaily === null ? C.textDim : (tradesLeftDaily <= 1 ? C.red : C.text) }}>
+                  {tradesLeftDaily === null ? 'No daily limit' : tradesLeftDaily}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span style={{ color: C.textDim }}>Trades left before max drawdown</span>
+                <span style={{ fontFamily: FONT_MONO, color: tradesLeftDD <= 1 ? C.red : C.text }}>{tradesLeftDD}</span>
+              </div>
+              <div className="text-[11px] pt-1" style={{ color: C.textFaint }}>
+                Assumes consecutive full losses at the current risk size — a worst-case planning number, not a prediction.
+              </div>
+            </div>
+
+            <div className="rounded-lg p-5 space-y-3" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="text-[11px] uppercase tracking-[0.2em]" style={{ color: C.textDim }}>Recommended max risk / trade</div>
+                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded tracking-widest" style={{ background: `${C.amber}22`, color: C.amber }}>PRO</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs" style={{ color: C.textDim }}>
+                  <span>Survive</span>
+                  <input type="number" min="1" step="1" className="w-14 rounded-md px-2 py-1 text-sm text-center" style={inputStyle}
+                    value={tradesToSurvive} onChange={e => setTradesToSurvive(parseInt(e.target.value) || 1)} />
+                  <span>losses</span>
+                </div>
+              </div>
+              <ProGate unlocked={licenseUnlocked} title="Max-risk recommendations are a Pro feature" onUnlock={() => setTab('settings')}>
+                {recommendedMaxRisk != null ? (
+                  <>
+                    <div className="text-3xl font-bold" style={{ fontFamily: FONT_MONO, color: C.amber }}>
+                      {fmtUSD(recommendedMaxRisk)}
+                      {recommendedMaxRiskPct != null && (
+                        <span className="text-base font-normal ml-2" style={{ color: C.textDim }}>≈ {recommendedMaxRiskPct.toFixed(2)}% of balance</span>
+                      )}
+                    </div>
+                    <div className="text-xs" style={{ color: C.textDim }}>
+                      Based on the {bindingConstraint} ÷ {survive} trade{survive === 1 ? '' : 's'} — keeping {survive} consecutive
+                      full losses at this size within budget.
+                    </div>
+                    <div className="text-sm flex justify-between pt-1" style={{ borderTop: `1px solid ${C.border}` }}>
+                      <span style={{ color: C.textDim }}>Your current risk per trade</span>
+                      <span style={{ fontFamily: FONT_MONO, color: riskAmount > recommendedMaxRisk ? C.red : C.green }}>{fmtUSD(riskAmount)}</span>
+                    </div>
+                    {riskAmount > recommendedMaxRisk && (
+                      <div className="text-[11px]" style={{ color: C.red }}>
+                        This is {fmtUSD(riskAmount - recommendedMaxRisk)} above the recommended max — consider lowering risk % or position size.
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="text-sm" style={{ color: C.textDim }}>Set a max daily loss or max drawdown rule in Settings to get a recommendation.</div>
+                )}
+              </ProGate>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ----------------------------------------------------------------- */}
+      {/* Trade Journal */}
+      {/* ----------------------------------------------------------------- */}
+      {tab === 'journal' && (
+        <div className="space-y-5">
+          {/* Stats */}
+          {stats && (
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+              {[
+                { label: 'Trades', value: stats.count },
+                { label: 'Win Rate', value: fmtPct(stats.winRate) },
+                { label: 'Avg Win', value: fmtUSD(stats.avgWin), color: C.green },
+                { label: 'Avg Loss', value: fmtUSD(stats.avgLoss), color: C.red },
+                { label: 'Profit Factor', value: stats.profitFactor === Infinity ? '∞' : stats.profitFactor.toFixed(2) },
+                { label: 'Best Trade', value: fmtUSD(stats.best), color: C.green },
+                { label: 'Worst Trade', value: fmtUSD(stats.worst), color: C.red },
+              ].map((c, i) => (
+                <div key={i} className="rounded-lg p-3" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+                  <div className="text-[10px] uppercase tracking-[0.15em] mb-1" style={{ color: C.textDim }}>{c.label}</div>
+                  <div className="text-base font-semibold" style={{ fontFamily: FONT_MONO, color: c.color || C.text }}>{c.value}</div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Add trade form */}
+          <div className="rounded-lg p-5" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <div className="text-sm font-semibold" style={{ fontFamily: FONT_DISPLAY }}>Log a Trade</div>
+              <label className="flex items-center gap-2 px-3 py-2 rounded-md text-sm cursor-pointer" style={{ background: C.panel2, border: `1px solid ${C.border}`, color: C.textDim }}>
+                <Upload size={14} />
+                Import CSV
+                <input type="file" accept=".csv" className="hidden" onChange={e => { if (e.target.files[0]) handleCSV(e.target.files[0]); e.target.value = ''; }} />
+              </label>
+            </div>
+
+            {importMsg && (
+              <div className="text-xs mb-3 px-3 py-2 rounded-md" style={{
+                background: importMsg.type === 'error' ? `${C.red}1A` : `${C.green}1A`,
+                color: importMsg.type === 'error' ? C.red : C.green,
+                border: `1px solid ${importMsg.type === 'error' ? C.red : C.green}55`,
+              }}>
+                {importMsg.text}
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 items-end">
+              <div className="col-span-1">
+                <FieldLabel>Date</FieldLabel>
+                <input type="date" className={inputClass} style={inputStyle} value={newTrade.date} onChange={e => setNewTrade({ ...newTrade, date: e.target.value })} />
+              </div>
+              <div className="col-span-1">
+                <FieldLabel>Symbol</FieldLabel>
+                <input type="text" placeholder="EURUSD" className={inputClass} style={inputStyle} value={newTrade.symbol} onChange={e => setNewTrade({ ...newTrade, symbol: e.target.value })} />
+              </div>
+              <div className="col-span-1">
+                <FieldLabel>Side</FieldLabel>
+                <select className={inputClass} style={{ ...inputStyle, fontFamily: FONT_BODY }} value={newTrade.side} onChange={e => setNewTrade({ ...newTrade, side: e.target.value })}>
+                  <option>Buy</option>
+                  <option>Sell</option>
+                </select>
+              </div>
+              <div className="col-span-1">
+                <FieldLabel>Size</FieldLabel>
+                <input type="number" step="0.01" placeholder="1.0" className={inputClass} style={inputStyle} value={newTrade.size} onChange={e => setNewTrade({ ...newTrade, size: e.target.value })} />
+              </div>
+              <div className="col-span-1">
+                <FieldLabel>Entry</FieldLabel>
+                <input type="number" step="any" className={inputClass} style={inputStyle} value={newTrade.entry} onChange={e => setNewTrade({ ...newTrade, entry: e.target.value })} />
+              </div>
+              <div className="col-span-1">
+                <FieldLabel>SL</FieldLabel>
+                <input type="number" step="any" className={inputClass} style={inputStyle} value={newTrade.sl} onChange={e => setNewTrade({ ...newTrade, sl: e.target.value })} />
+              </div>
+              <div className="col-span-1">
+                <FieldLabel>TP1</FieldLabel>
+                <input type="number" step="any" className={inputClass} style={inputStyle} value={newTrade.tp1} onChange={e => setNewTrade({ ...newTrade, tp1: e.target.value })} />
+              </div>
+              <div className="col-span-1">
+                <FieldLabel>TP2</FieldLabel>
+                <input type="number" step="any" className={inputClass} style={inputStyle} value={newTrade.tp2} onChange={e => setNewTrade({ ...newTrade, tp2: e.target.value })} />
+              </div>
+              <div className="col-span-1">
+                <FieldLabel>Exit</FieldLabel>
+                <input type="number" step="any" className={inputClass} style={inputStyle} value={newTrade.exit} onChange={e => setNewTrade({ ...newTrade, exit: e.target.value })} />
+              </div>
+              <div className="col-span-1">
+                <FieldLabel>P&amp;L ($)</FieldLabel>
+                <input type="number" step="0.01" placeholder="-50.00" className={inputClass} style={inputStyle} value={newTrade.pnl} onChange={e => setNewTrade({ ...newTrade, pnl: e.target.value })} />
+              </div>
+              <div className="col-span-1">
+                <FieldLabel>Duration (min)</FieldLabel>
+                <input type="number" min="0" className={inputClass} style={inputStyle} value={newTrade.durationMin} onChange={e => setNewTrade({ ...newTrade, durationMin: e.target.value })} />
+              </div>
+              <div className="col-span-1">
+                <button onClick={addTrade} className="w-full flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold" style={{ background: C.amber, color: '#1A1404' }}>
+                  <Plus size={15} /> Add
+                </button>
+              </div>
+            </div>
+            <div className="mt-2">
+              <FieldLabel>Feeling / Remarks</FieldLabel>
+              <input type="text" placeholder="How did this trade feel? Confident, anxious, revenge trade, followed plan..." className={`${inputClass} w-full`} style={{ ...inputStyle, fontFamily: FONT_BODY }} value={newTrade.notes} onChange={e => setNewTrade({ ...newTrade, notes: e.target.value })} />
+            </div>
+            <div className="text-[11px] mt-2 leading-relaxed" style={{ color: C.textFaint }}>
+              CSV import looks for a profit/loss column (e.g. "P&amp;L", "Profit", "Net P&amp;L") plus optional date,
+              symbol, side, size, entry, SL, TP1, TP2, and exit columns — common exports from MT4/MT5, cTrader and
+              most prop-firm dashboards match automatically. Trade duration is read from a "Duration" column if
+              present, or calculated from "Open time" / "Close time" columns. A "Feeling", "Remarks" or "Comment"
+              column maps to Feeling / Remarks.
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="rounded-lg overflow-hidden" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr style={{ borderBottom: `1px solid ${C.border}` }}>
+                    {['Date', 'Symbol', 'Side', 'Size', 'Entry', 'SL', 'TP1', 'TP2', 'Exit', 'P&L', 'Feeling / Remarks', ''].map((h, i) => (
+                      <th key={i} className="text-left px-3 py-2 text-[11px] uppercase tracking-[0.15em] whitespace-nowrap" style={{ color: C.textDim, fontFamily: FONT_BODY }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...trades].slice().reverse().map(t => (
+                    <tr key={t.id} style={{ borderBottom: `1px solid ${C.border}` }}>
+                      <td className="px-3 py-2 whitespace-nowrap" style={{ fontFamily: FONT_MONO, color: C.textDim }}>{t.date}</td>
+                      <td className="px-3 py-2 whitespace-nowrap">{t.symbol}</td>
+                      <td className="px-3 py-2 whitespace-nowrap">{t.side}</td>
+                      <td className="px-3 py-2 whitespace-nowrap" style={{ fontFamily: FONT_MONO }}>{t.size ?? '—'}</td>
+                      <td className="px-3 py-2 whitespace-nowrap" style={{ fontFamily: FONT_MONO, color: C.textDim }}>{t.entry ?? '—'}</td>
+                      <td className="px-3 py-2 whitespace-nowrap" style={{ fontFamily: FONT_MONO, color: C.red }}>{t.sl ?? '—'}</td>
+                      <td className="px-3 py-2 whitespace-nowrap" style={{ fontFamily: FONT_MONO, color: C.green }}>{t.tp1 ?? '—'}</td>
+                      <td className="px-3 py-2 whitespace-nowrap" style={{ fontFamily: FONT_MONO, color: C.green }}>{t.tp2 ?? '—'}</td>
+                      <td className="px-3 py-2 whitespace-nowrap" style={{ fontFamily: FONT_MONO, color: C.textDim }}>{t.exit ?? '—'}</td>
+                      <td className="px-3 py-2 whitespace-nowrap font-semibold" style={{ fontFamily: FONT_MONO, color: t.pnl >= 0 ? C.green : C.red }}>{fmtUSD(t.pnl)}</td>
+                      <td className="px-3 py-2 max-w-[220px] truncate" style={{ color: C.textDim }}>{t.notes}</td>
+                      <td className="px-3 py-2">
+                        <button onClick={() => removeTrade(t.id)} aria-label="Delete trade" style={{ color: C.textFaint }} className="hover:opacity-100 opacity-60">
+                          <Trash2 size={15} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {trades.length === 0 && (
+                    <tr><td colSpan={12} className="px-3 py-8 text-center text-sm" style={{ color: C.textDim }}>No trades logged yet. Add one above or import a CSV.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ----------------------------------------------------------------- */}
+      {/* Performance Coach */}
+      {/* ----------------------------------------------------------------- */}
+      {tab === 'coach' && (
+        <div className="space-y-5">
+          <div className="rounded-lg p-5" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="text-sm font-semibold" style={{ fontFamily: FONT_DISPLAY }}>Performance Coach</div>
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded tracking-widest" style={{ background: `${C.amber}22`, color: C.amber }}>PRO</span>
+            </div>
+            <ProGate unlocked={licenseUnlocked} title="The Performance Coach is a Pro feature" onUnlock={() => setTab('settings')}>
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
+                <div className="text-xs" style={{ color: C.textDim }}>AI-assisted review of your trades</div>
+                <div className="flex items-center gap-2">
+                  <select
+                    className={inputClass}
+                    style={{ ...inputStyle, fontFamily: FONT_BODY, width: 'auto' }}
+                    value={coachScope}
+                    onChange={e => { setCoachScope(e.target.value); setCoachSummary(null); }}
+                  >
+                    <option value="today">Today's session</option>
+                    <option value="all">All logged trades</option>
+                  </select>
+                  <button
+                    onClick={generateSummary}
+                    disabled={coachLoading}
+                    className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold whitespace-nowrap disabled:opacity-60"
+                    style={{ background: C.amber, color: '#1A1404' }}
+                  >
+                    <Sparkles size={15} /> {coachLoading ? 'Analyzing…' : 'Generate Summary'}
+                  </button>
+                </div>
+              </div>
+              <p className="text-xs leading-relaxed mb-4" style={{ color: C.textFaint }}>
+                Reviews {scopedTrades.length} trade{scopedTrades.length === 1 ? '' : 's'} from {scopeLabel} alongside your
+                current profit-target, drawdown, and daily-loss usage, and suggests what's working and what to adjust.
+              </p>
+
+              {coachLoading && (
+                <div className="text-sm py-10 text-center" style={{ color: C.textDim }}>Reviewing your trades…</div>
+              )}
+              {!coachLoading && !coachSummary && (
+                <div className="text-sm py-10 text-center" style={{ color: C.textDim }}>Click "Generate Summary" for a performance review.</div>
+              )}
+              {!coachLoading && coachSummary && (
+                <>
+                  <CoachOutput text={coachSummary} />
+                  {coachSource === 'local' && (
+                    <p className="text-[11px] mt-4 pt-3" style={{ color: C.textFaint, borderTop: `1px solid ${C.border}` }}>
+                      Generated locally from your logged numbers (AI analysis wasn't available in this context).
+                    </p>
+                  )}
+                </>
+              )}
+            </ProGate>
+          </div>
+
+          <p className="text-xs leading-relaxed" style={{ color: C.textFaint }}>
+            This review is generated from the numbers you've logged and is meant as a starting point for reflection,
+            not a guarantee of future results or formal trading advice.
+          </p>
+        </div>
+      )}
+
+      {/* ----------------------------------------------------------------- */}
+      {/* Settings */}
+      {/* ----------------------------------------------------------------- */}
+      {tab === 'settings' && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div className="rounded-lg p-5 space-y-4" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+            <div className="text-sm font-semibold" style={{ fontFamily: FONT_DISPLAY }}>Account</div>
+
+            <div>
+              <FieldLabel>Prop firm rule set</FieldLabel>
+              <select className={inputClass} style={{ ...inputStyle, fontFamily: FONT_BODY }} value={firmId} onChange={e => handleFirmChange(e.target.value)}>
+                {Object.entries(FIRM_PRESETS).map(([id, r]) => <option key={id} value={id}>{r.name}</option>)}
+              </select>
+            </div>
+
+            <div>
+              <FieldLabel>Starting account balance ($)</FieldLabel>
+              <input type="number" className={inputClass} style={inputStyle} value={startingBalance} onChange={e => setStartingBalance(parseFloat(e.target.value) || 0)} />
+            </div>
+
+            <button onClick={resetAll} className="flex items-center gap-2 text-xs px-3 py-2 rounded-md" style={{ background: `${C.red}1A`, color: C.red, border: `1px solid ${C.red}55` }}>
+              <RotateCcw size={13} /> Reset trades & settings
+            </button>
+          </div>
+
+          <div className="rounded-lg p-5 space-y-4" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+            <div className="text-sm font-semibold" style={{ fontFamily: FONT_DISPLAY }}>Evaluation Rules</div>
+            <div className="text-xs leading-relaxed" style={{ color: C.textFaint }}>
+              Selecting a firm above loads typical defaults — edit any field to fine-tune for your specific
+              account size or to mirror a firm not listed.
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <FieldLabel>Profit target (%)</FieldLabel>
+                <input type="number" step="0.5" className={inputClass} style={inputStyle} value={rules.profitTargetPct} onChange={e => setRules({ ...rules, profitTargetPct: parseFloat(e.target.value) || 0 })} />
+              </div>
+              <div>
+                <FieldLabel>Min trading days</FieldLabel>
+                <input type="number" className={inputClass} style={inputStyle} value={rules.minTradingDays} onChange={e => setRules({ ...rules, minTradingDays: parseInt(e.target.value) || 0 })} />
+              </div>
+            </div>
+
+            <div>
+              <FieldLabel>Max overall drawdown (%)</FieldLabel>
+              <div className="grid grid-cols-2 gap-3">
+                <input type="number" step="0.5" className={inputClass} style={inputStyle} value={rules.maxOverallDrawdownPct} onChange={e => setRules({ ...rules, maxOverallDrawdownPct: parseFloat(e.target.value) || 0 })} />
+                <select className={inputClass} style={{ ...inputStyle, fontFamily: FONT_BODY }} value={rules.drawdownType} onChange={e => setRules({ ...rules, drawdownType: e.target.value })}>
+                  <option value="static">Static (from start balance)</option>
+                  <option value="trailing">Trailing (from peak balance)</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <FieldLabel>Max daily loss (%)</FieldLabel>
+                <label className="flex items-center gap-1.5 text-[11px]" style={{ color: C.textDim }}>
+                  <input type="checkbox" checked={rules.maxDailyLossPct != null}
+                    onChange={e => setRules({ ...rules, maxDailyLossPct: e.target.checked ? 5 : null })} />
+                  Enabled
+                </label>
+              </div>
+              <input type="number" step="0.5" className={inputClass} style={inputStyle}
+                disabled={rules.maxDailyLossPct == null}
+                value={rules.maxDailyLossPct ?? ''}
+                onChange={e => setRules({ ...rules, maxDailyLossPct: parseFloat(e.target.value) || 0 })} />
+            </div>
+          </div>
+
+          {/* Pro license */}
+          <div className="rounded-lg p-5 space-y-4 lg:col-span-2" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div className="flex items-center gap-2">
+                <div className="text-sm font-semibold" style={{ fontFamily: FONT_DISPLAY }}>Pro License</div>
+                {licenseUnlocked ? (
+                  <span className="flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: `${C.green}1A`, color: C.green, border: `1px solid ${C.green}55` }}>
+                    <CheckCircle2 size={12} /> Unlocked
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: `${C.amber}1A`, color: C.amber, border: `1px solid ${C.amber}55` }}>
+                    <Lock size={12} /> Locked
+                  </span>
+                )}
+              </div>
+              <a href={PRO_CHECKOUT_URL} target="_blank" rel="noopener noreferrer"
+                className="text-xs font-semibold px-3 py-2 rounded-md whitespace-nowrap" style={{ background: C.amber, color: '#1A1404' }}>
+                Get Pro
+              </a>
+            </div>
+
+            <div className="text-xs leading-relaxed" style={{ color: C.textFaint }}>
+              Pro unlocks the Consistency Check (40%/50% rules), the Performance Coach, and the recommended
+              max-risk-per-trade calculator. Enter the license key from your purchase confirmation email below.
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input
+                type="text"
+                placeholder="XXXX-XXXX-XXXX-XXXX"
+                className={`${inputClass} flex-1`}
+                style={inputStyle}
+                value={licenseKey}
+                onChange={e => setLicenseKey(e.target.value)}
+                disabled={licenseUnlocked}
+              />
+              {licenseUnlocked ? (
+                <button onClick={removeLicense} className="text-sm px-4 py-2 rounded-md font-semibold whitespace-nowrap" style={{ background: C.panel2, color: C.textDim, border: `1px solid ${C.border}` }}>
+                  Remove license
+                </button>
+              ) : (
+                <button onClick={verifyLicense} className="text-sm px-4 py-2 rounded-md font-semibold whitespace-nowrap" style={{ background: C.amber, color: '#1A1404' }}>
+                  Unlock
+                </button>
+              )}
+            </div>
+
+            {licenseMessage && (
+              <div className="text-xs px-3 py-2 rounded-md" style={{
+                background: licenseMessage.type === 'error' ? `${C.red}1A` : `${C.green}1A`,
+                color: licenseMessage.type === 'error' ? C.red : C.green,
+                border: `1px solid ${licenseMessage.type === 'error' ? C.red : C.green}55`,
+              }}>
+                {licenseMessage.text}
+              </div>
+            )}
+
+            <div className="text-[11px] leading-relaxed" style={{ color: C.textFaint }}>
+              License keys are checked locally in your browser and stored only on this device. No account or
+              personal data is sent anywhere.
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+</script>
+</body>
+</html>
