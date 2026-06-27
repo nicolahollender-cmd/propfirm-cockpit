@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NIG TraderDoc — TradeRoot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  html, body { margin: 0; background: #11151C; color: #E9E7E2; font-family: 'Inter', sans-serif; }
+  ::selection { background: #D9B05C44; }
+  textarea, input { outline: none; }
+  textarea:focus, input:focus { box-shadow: 0 0 0 1.5px #D9B05C66; }
+  ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #11151C; } ::-webkit-scrollbar-thumb { background: #2B3441; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+// @ts-nocheck
+/** @jsxRuntime classic */
+const { useState, useEffect, useCallback, useMemo } = React;
+
+// ─── Config — swap this link once WhatsApp community is live ─────────────────
+const WHATSAPP_LINK = 'https://chat.whatsapp.com/NIGCOMMUNITYLINK'; // ← REPLACE WITH REAL LINK
+
+// ─── Theme ──────────────────────────────────────────────────────────────────
+const C = {
+  bg:        '#11151C',
+  panel:     '#1A212C',
+  panel2:    '#222B38',
+  border:    '#2B3441',
+  text:      '#E9E7E2',
+  textDim:   '#8B93A3',
+  textFaint: '#5C6573',
+  amber:     '#D9B05C',
+  green:     '#5ECBA6',
+  red:       '#E2574C',
+  blue:      '#5FA8E0',
+};
+const FONT_DISPLAY = "'Space Grotesk', sans-serif";
+const FONT_BODY    = "'Inter', sans-serif";
+const FONT_MONO    = "'JetBrains Mono', monospace";
+
+// ─── Icons ───────────────────────────────────────────────────────────────────
+const Ico = ({ d, size = 16, poly, circle, rect, line, path2, className, style }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
+    {d && <path d={d} />}
+    {poly && <polyline points={poly} />}
+    {circle && <circle cx={circle[0]} cy={circle[1]} r={circle[2]} />}
+    {rect && <rect x={rect[0]} y={rect[1]} width={rect[2]} height={rect[3]} rx={rect[4]||0} />}
+    {line && <line x1={line[0]} y1={line[1]} x2={line[2]} y2={line[3]} />}
+    {path2 && <path d={path2} />}
+  </svg>
+);
+const IconPlus      = (p) => <Ico {...p} d="M5 12h14M12 5v14" />;
+const IconTrash     = (p) => <Ico {...p} d="M3 6h18M19 6l-1.5 14a2 2 0 0 1-2 1.8H8.5a2 2 0 0 1-2-1.8L5 6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />;
+const IconCheck     = (p) => <Ico {...p} d="M20 6 9 17l-5-5" />;
+const IconLock      = (p) => <Ico {...p} d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zM7 11V7a5 5 0 0 1 10 0v4" />;
+const IconStar      = (p) => <Ico {...p} d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />;
+const IconTrend     = (p) => <Ico {...p} d="M22 12h-4l-3 9L9 3l-3 9H2" />;
+const IconClipboard = (p) => <Ico {...p} d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1z" />;
+const IconTarget    = (p) => <Ico {...p} d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12zM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />;
+const IconBrain     = (p) => <Ico {...p} d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z" />;
+const IconChevronR  = (p) => <Ico {...p} d="m9 18 6-6-6-6" />;
+const IconX         = (p) => <Ico {...p} d="M18 6 6 18M6 6l12 12" />;
+
+// ─── Local storage ────────────────────────────────────────────────────────────
+function load(key, def) { try { const r = localStorage.getItem('tdr_' + key); return r ? JSON.parse(r) : def; } catch { return def; } }
+function save(key, val) { try { localStorage.setItem('tdr_' + key, JSON.stringify(val)); } catch {} }
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+function uid() { return `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`; }
+function fmtDate(d) { return new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); }
+function weekLabel(offset = 0) {
+  const d = new Date(); d.setDate(d.getDate() - d.getDay() + 1 + offset * 7);
+  return d.toISOString().slice(0, 10);
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+const FREE_LOG_DAYS = 7;       // free tier: see last 7 days
+const FREE_FIVEWHY  = true;    // manual five-why = free
+const TABS = [
+  { id: 'log',      label: 'Mistake Log', icon: IconClipboard },
+  { id: 'fivewhy',  label: '5 Whys',      icon: IconBrain },
+  { id: 'wins',     label: 'Small Wins',  icon: IconTarget },
+  { id: 'patterns', label: 'Patterns',    icon: IconTrend },
+];
+
+// ─── Shared UI components ─────────────────────────────────────────────────────
+const Card = ({ children, className = '', style = {} }) => (
+  <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: '1.25rem', ...style }} className={className}>
+    {children}
+  </div>
+);
+
+const Badge = ({ children, color = C.amber }) => (
+  <span style={{ background: color + '22', color, border: `1px solid ${color}44`, borderRadius: 20, padding: '2px 10px', fontSize: 11, fontWeight: 600, letterSpacing: '0.04em', fontFamily: FONT_BODY }}>
+    {children}
+  </span>
+);
+
+const Btn = ({ children, onClick, variant = 'primary', disabled = false, size = 'md', style = {} }) => {
+  const base = { border: 'none', borderRadius: 8, cursor: disabled ? 'not-allowed' : 'pointer', fontFamily: FONT_BODY, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6, opacity: disabled ? 0.5 : 1, transition: 'opacity 0.15s', ...style };
+  const sizes = { sm: { padding: '6px 14px', fontSize: 12 }, md: { padding: '9px 18px', fontSize: 14 }, lg: { padding: '11px 24px', fontSize: 15 } };
+  const variants = {
+    primary: { background: C.amber, color: '#11151C' },
+    secondary: { background: C.panel2, color: C.text, border: `1px solid ${C.border}` },
+    ghost: { background: 'transparent', color: C.textDim, border: `1px solid ${C.border}` },
+    danger: { background: C.red + '22', color: C.red, border: `1px solid ${C.red}44` },
+  };
+  return <button style={{ ...base, ...sizes[size], ...variants[variant] }} onClick={disabled ? undefined : onClick}>{children}</button>;
+};
+
+const TextArea = ({ value, onChange, placeholder, rows = 3 }) => (
+  <textarea
+    value={value} onChange={e => onChange(e.target.value)}
+    placeholder={placeholder} rows={rows}
+    style={{ width: '100%', background: C.panel2, border: `1px solid ${C.border}`, borderRadius: 8, padding: '10px 12px', color: C.text, fontFamily: FONT_BODY, fontSize: 14, resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.6 }}
+  />
+);
+
+const Input = ({ value, onChange, placeholder, type = 'text' }) => (
+  <input
+    type={type} value={value} onChange={e => onChange(e.target.value)}
+    placeholder={placeholder}
+    style={{ width: '100%', background: C.panel2, border: `1px solid ${C.border}`, borderRadius: 8, padding: '9px 12px', color: C.text, fontFamily: FONT_BODY, fontSize: 14, boxSizing: 'border-box' }}
+  />
+);
+
+const ProLock = ({ feature }) => (
+  <div style={{ background: C.amber + '11', border: `1px solid ${C.amber}33`, borderRadius: 10, padding: '1rem', display: 'flex', alignItems: 'center', gap: 12, marginTop: 12 }}>
+    <IconLock size={18} style={{ color: C.amber, flexShrink: 0 }} />
+    <div>
+      <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 600, color: C.amber, fontSize: 14 }}>Pro feature — {feature}</div>
+      <div style={{ fontSize: 12, color: C.textDim, marginTop: 2 }}>Upgrade to TradeRoot Pro ($29/mo) to unlock. Included free with the NIG Trader Performance & Lifestyle Booster.</div>
+    </div>
+    <button onClick={() => window.open('https://offers.livetradingcoaching.com/trader-performance-booster', '_blank')}
+      style={{ marginLeft: 'auto', flexShrink: 0, background: C.amber, color: '#11151C', border: 'none', borderRadius: 8, padding: '7px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: FONT_BODY }}>
+      Upgrade →
+    </button>
+  </div>
+);
+
+// ─── TraderDoc AI Diagnostic Panel ───────────────────────────────────────────
+const SAMPLE_DIAGNOSIS = {
+  category: 'Emotional Risk Management',
+  rootCause: 'Your mistake originates at the neurological level — not a strategy gap. After consecutive losses, the amygdala triggers a threat response that overrides your prefrontal cortex, pushing you to "recover" instead of execute your plan. This is measurable, predictable, and fixable.',
+  prescription: [
+    'Implement a mandatory 10-minute break after any loss exceeding 50% of your daily stop. Non-negotiable — this resets cortisol response.',
+    'Add a pre-trade breathing protocol (4-7-8 pattern, 3 cycles) before any trade following a loss. This activates the parasympathetic nervous system.',
+    'Set a rule: if you have 2 consecutive losses, reduce position size by 50% for the remainder of the session. Size down, not up.',
+  ],
+  lifestyleNote: 'Poor sleep quality is the #1 amplifier of emotional trading decisions. A trader running on under 7 hours produces 40% more cortisol under pressure.',
+};
+
+function TraderDocAI({ isPro, mistake, whys }) {
+  const [running, setRunning] = useState(false);
+  const [result, setResult]   = useState(null);
+
+  function runDiagnosis() {
+    if (!isPro) { window.open('https://offers.livetradingcoaching.com/trader-performance-booster', '_blank'); return; }
+    setRunning(true);
+    setTimeout(() => { setRunning(false); setResult(SAMPLE_DIAGNOSIS); }, 1800);
+  }
+
+  const hasInput = mistake.trim().length > 5;
+
+  return (
+    <div style={{ marginTop: 16 }}>
+      {/* Header block */}
+      <div style={{ background: 'linear-gradient(135deg, #0D1520 0%, #1A212C 100%)', border: `1px solid ${C.amber}44`, borderRadius: 12, padding: '1.25rem', marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+          <div style={{ width: 40, height: 40, background: C.amber, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <IconBrain size={20} style={{ color: '#11151C' }} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 15, color: C.amber }}>TraderDoc AI — Clinical Diagnosis</div>
+            <div style={{ fontSize: 12, color: C.textDim, marginTop: 3, lineHeight: 1.5 }}>Built by a real specialist. <strong style={{ color: C.text }}>Dr. Nicola Hollender</strong> — 29 years live trading · ICF Certified Performance Coach · Anti-Aging Medicine Specialist</div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {['Medical diagnosis methodology', 'Root cause at the neurological level', 'Lifestyle prescription included'].map(tag => (
+            <div key={tag} style={{ background: C.amber + '18', border: `1px solid ${C.amber}33`, borderRadius: 20, padding: '3px 10px', fontSize: 11, color: C.amber }}>{tag}</div>
+          ))}
+        </div>
+      </div>
+
+      {/* Sample output (locked for free) */}
+      <div style={{ position: 'relative' }}>
+        <div style={{ filter: isPro ? 'none' : 'blur(3px)', pointerEvents: isPro ? 'auto' : 'none', userSelect: isPro ? 'auto' : 'none' }}>
+          {result ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 10, padding: '1rem' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: C.blue, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Category · {result.category}</div>
+                <div style={{ fontSize: 13, color: C.text, lineHeight: 1.7 }}>{result.rootCause}</div>
+              </div>
+              <div style={{ background: C.green + '0D', border: `1px solid ${C.green}33`, borderRadius: 10, padding: '1rem' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: C.green, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Prescription</div>
+                {result.prescription.map((p, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
+                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: C.green + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: C.green, flexShrink: 0, marginTop: 1 }}>{i + 1}</div>
+                    <div style={{ fontSize: 13, color: C.text, lineHeight: 1.6 }}>{p}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ background: C.blue + '0D', border: `1px solid ${C.blue}33`, borderRadius: 10, padding: '1rem' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: C.blue, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Lifestyle Note · Blood Tuning Protocol</div>
+                <div style={{ fontSize: 13, color: C.text, lineHeight: 1.6 }}>{result.lifestyleNote}</div>
+              </div>
+            </div>
+          ) : (
+            <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 10, padding: '1.25rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {[
+                  { label: 'Category · Emotional Risk Management', color: C.blue },
+                  { label: 'Root cause identified at neurological level', color: C.text },
+                  { label: 'Prescription — 3 specific rules', color: C.green },
+                  { label: 'Lifestyle note — Blood Tuning Protocol', color: C.blue },
+                ].map(row => (
+                  <div key={row.label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: row.color, flexShrink: 0 }} />
+                    <div style={{ fontSize: 13, color: row.color, fontWeight: row.color === C.text ? 400 : 500 }}>{row.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Lock overlay for free users */}
+        {!isPro && (
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, borderRadius: 10, background: 'rgba(17,21,28,0.7)' }}>
+            <IconLock size={22} style={{ color: C.amber }} />
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, color: C.amber, fontSize: 14, marginBottom: 4 }}>TraderDoc AI — Pro only</div>
+              <div style={{ fontSize: 12, color: C.textDim, maxWidth: 260, lineHeight: 1.5 }}>Get a medical-grade diagnosis of every trading mistake — root cause at the neurological level, a prescription, and a lifestyle protocol.</div>
+            </div>
+            <button onClick={() => window.open('https://offers.livetradingcoaching.com/trader-performance-booster', '_blank')}
+              style={{ background: C.amber, color: '#11151C', border: 'none', borderRadius: 8, padding: '9px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: FONT_BODY }}>
+              Unlock TraderDoc AI — $29/mo →
+            </button>
+            <div style={{ fontSize: 11, color: C.textFaint }}>Included free with the NIG Trader Performance &amp; Lifestyle Booster</div>
+          </div>
+        )}
+      </div>
+
+      {/* Run button (Pro only, after filling out the worksheet) */}
+      {isPro && (
+        <div style={{ marginTop: 12, display: 'flex', gap: 10 }}>
+          <button onClick={runDiagnosis} disabled={!hasInput || running}
+            style={{ background: running ? C.panel2 : C.amber, color: running ? C.textDim : '#11151C', border: 'none', borderRadius: 8, padding: '10px 20px', fontSize: 14, fontWeight: 700, cursor: hasInput && !running ? 'pointer' : 'not-allowed', fontFamily: FONT_BODY, display: 'flex', alignItems: 'center', gap: 8, opacity: !hasInput ? 0.5 : 1 }}>
+            <IconBrain size={15} />
+            {running ? 'Diagnosing...' : result ? 'Re-run Diagnosis' : 'Run TraderDoc AI Diagnosis'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── WhatsApp Community Banner ────────────────────────────────────────────────
+function WhatsAppBanner() {
+  const [dismissed, setDismissed] = useState(() => load('waDismissed', false));
+  if (dismissed) return null;
+  return (
+    <div style={{ background: 'linear-gradient(135deg, #075E54 0%, #128C7E 100%)', borderRadius: 12, padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
+      <div style={{ fontSize: 24, flexShrink: 0 }}>💬</div>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 14, color: '#fff', marginBottom: 2 }}>Free NIG Trader Community</div>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', lineHeight: 1.5 }}>Free training announcements, new YouTube videos, and NIG updates — straight to your WhatsApp.</div>
+      </div>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
+        <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
+          style={{ background: '#fff', color: '#075E54', border: 'none', borderRadius: 8, padding: '7px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: FONT_BODY, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+          Join free →
+        </a>
+        <button onClick={() => { setDismissed(true); save('waDismissed', true); }}
+          style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: 6, padding: '6px 8px', cursor: 'pointer', color: '#fff', fontSize: 14, lineHeight: 1 }}>
+          ×
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── TAB: Mistake Log ─────────────────────────────────────────────────────────
+function LogTab({ isPro }) {
+  const [entries, setEntries] = useState(() => load('log', []));
+  const [draft, setDraft]     = useState('');
+  const [date, setDate]       = useState(todayStr());
+
+  useEffect(() => { save('log', entries); }, [entries]);
+
+  function addEntry() {
+    if (!draft.trim()) return;
+    setEntries(prev => [{ id: uid(), date, text: draft.trim(), createdAt: Date.now() }, ...prev]);
+    setDraft('');
+  }
+
+  const cutoff = useMemo(() => {
+    if (isPro) return null;
+    const d = new Date(); d.setDate(d.getDate() - FREE_LOG_DAYS);
+    return d.toISOString().slice(0, 10);
+  }, [isPro]);
+
+  const visible = useMemo(() => {
+    if (!cutoff) return entries;
+    return entries.filter(e => e.date >= cutoff);
+  }, [entries, cutoff]);
+
+  const byDate = useMemo(() => {
+    const map = {};
+    visible.forEach(e => { if (!map[e.date]) map[e.date] = []; map[e.date].push(e); });
+    return Object.entries(map).sort((a, b) => b[0].localeCompare(a[0]));
+  }, [visible]);
+
+  const todayCount = useMemo(() => entries.filter(e => e.date === todayStr()).length, [entries]);
+  const weekCount  = useMemo(() => {
+    const w = weekLabel(); return entries.filter(e => e.date >= w).length;
+  }, [entries]);
+
+  const streak = useMemo(() => {
+    const days = [...new Set(entries.map(e => e.date))].sort((a, b) => b.localeCompare(a));
+    let count = 0, d = new Date();
+    for (const day of days) {
+      const s = d.toISOString().slice(0, 10);
+      if (day === s) { count++; d.setDate(d.getDate() - 1); }
+      else if (day < s) break;
+    }
+    return count;
+  }, [entries]);
+
+  function removeEntry(id) { setEntries(prev => prev.filter(e => e.id !== id)); }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* Stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
+        {[
+          { label: 'Day streak', value: streak, color: C.green },
+          { label: 'Today', value: todayCount, color: C.amber },
+          { label: 'This week', value: weekCount, color: C.blue },
+        ].map(s => (
+          <Card key={s.label} style={{ textAlign: 'center', padding: '1rem' }}>
+            <div style={{ fontSize: 28, fontWeight: 700, fontFamily: FONT_MONO, color: s.color }}>{s.value}</div>
+            <div style={{ fontSize: 12, color: C.textDim, marginTop: 4 }}>{s.label}</div>
+          </Card>
+        ))}
+      </div>
+
+      {/* Add entry */}
+      <Card>
+        <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 15, marginBottom: 12 }}>Add a mistake</div>
+        <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
+          <input type="date" value={date} onChange={e => setDate(e.target.value)}
+            style={{ background: C.panel2, border: `1px solid ${C.border}`, borderRadius: 8, padding: '8px 10px', color: C.text, fontFamily: FONT_BODY, fontSize: 13 }} />
+        </div>
+        <TextArea value={draft} onChange={setDraft} placeholder="Write the mistake as a fact — e.g. 'I took a 4th trade after hitting my daily stop'" rows={2} />
+        <div style={{ marginTop: 10 }}>
+          <Btn onClick={addEntry} disabled={!draft.trim()}><IconPlus size={14} /> Add to log</Btn>
+        </div>
+        <div style={{ fontSize: 12, color: C.textFaint, marginTop: 8 }}>Facts only. No judgement. No "I was stupid." Just what happened.</div>
+      </Card>
+
+      {/* History */}
+      {!isPro && entries.length > visible.length && (
+        <div style={{ background: C.amber + '11', border: `1px solid ${C.amber}33`, borderRadius: 10, padding: '0.75rem 1rem', fontSize: 13, color: C.amber }}>
+          Showing last {FREE_LOG_DAYS} days. <strong>{entries.length - visible.length}</strong> older entries are archived. <a href="https://offers.livetradingcoaching.com/trader-performance-booster" target="_blank" style={{ color: C.amber, textDecoration: 'underline' }}>Upgrade to Pro</a> for full 90-day history.
+        </div>
+      )}
+
+      {byDate.length === 0 && (
+        <Card style={{ textAlign: 'center', padding: '2rem' }}>
+          <div style={{ color: C.textFaint, fontSize: 14 }}>No mistakes logged yet.</div>
+          <div style={{ color: C.textFaint, fontSize: 12, marginTop: 4 }}>Start after your next session — 2 minutes, 3 facts.</div>
+        </Card>
+      )}
+
+      {byDate.map(([day, dayEntries]) => (
+        <Card key={day}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 14 }}>{fmtDate(day)}</div>
+            <Badge color={C.textFaint}>{dayEntries.length} mistake{dayEntries.length !== 1 ? 's' : ''}</Badge>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {dayEntries.map((e, i) => (
+              <div key={e.id} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', background: C.panel2, borderRadius: 8, padding: '10px 12px' }}>
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background: C.border, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontFamily: FONT_MONO, color: C.textDim, flexShrink: 0, marginTop: 1 }}>{i + 1}</div>
+                <div style={{ flex: 1, fontSize: 14, color: C.text, lineHeight: 1.5 }}>{e.text}</div>
+                <button onClick={() => removeEntry(e.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.textFaint, padding: 2 }}>
+                  <IconX size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+// ─── TAB: Five Whys ───────────────────────────────────────────────────────────
+function FiveWhyTab({ isPro }) {
+  const [sessions, setSessions]   = useState(() => load('fivewhy', []));
+  const [active, setActive]       = useState(null); // id of active session
+  const [mistake, setMistake]     = useState('');
+  const [whys, setWhys]           = useState(['', '', '', '', '']);
+  const [rootCause, setRootCause] = useState('');
+  const [fix, setFix]             = useState('');
+  const [showNew, setShowNew]     = useState(false);
+
+  useEffect(() => { save('fivewhy', sessions); }, [sessions]);
+
+  function startNew() {
+    setMistake(''); setWhys(['', '', '', '', '']); setRootCause(''); setFix('');
+    setActive(null); setShowNew(true);
+  }
+
+  function saveSession() {
+    if (!mistake.trim()) return;
+    const sess = { id: uid(), date: todayStr(), mistake, whys, rootCause, fix, createdAt: Date.now() };
+    setSessions(prev => [sess, ...prev]);
+    setShowNew(false); setActive(null);
+  }
+
+  function updateWhy(i, val) { setWhys(prev => prev.map((w, idx) => idx === i ? val : w)); }
+
+  const WHY_HINTS = [
+    'Why did this mistake happen?',
+    'Why did that happen?',
+    'Why did that happen?',
+    'Why is that the case?',
+    'And why is that? (Root cause often appears here)',
+  ];
+
+  const WHY_COLORS = [C.textDim, C.textDim, C.blue, C.amber, C.green];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 17 }}>Five-Why Diagnosis</div>
+          <div style={{ fontSize: 13, color: C.textDim, marginTop: 2 }}>The real root cause appears at why 4 or 5 — never why 1.</div>
+        </div>
+        <Btn onClick={startNew} size="sm"><IconPlus size={13} /> New diagnosis</Btn>
+      </div>
+
+      {showNew && (
+        <Card>
+          <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 15, marginBottom: 14 }}>New diagnosis</div>
+
+          <div style={{ marginBottom: 14 }}>
+            <label style={{ fontSize: 12, fontWeight: 600, color: C.textDim, display: 'block', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Your #1 recurring mistake this week</label>
+            <TextArea value={mistake} onChange={setMistake} placeholder="e.g. I kept cutting winners before target" rows={2} />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 14 }}>
+            {whys.map((w, i) => (
+              <div key={i}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: WHY_COLORS[i] + '22', border: `1px solid ${WHY_COLORS[i]}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, fontFamily: FONT_MONO, color: WHY_COLORS[i], flexShrink: 0 }}>{i + 1}</div>
+                  <label style={{ fontSize: 13, color: WHY_COLORS[i], fontWeight: 500 }}>Why {i + 1} — {WHY_HINTS[i]}</label>
+                </div>
+                <TextArea value={w} onChange={val => updateWhy(i, val)} placeholder={`Why ${i + 1}...`} rows={2} />
+              </div>
+            ))}
+          </div>
+
+          <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div>
+              <label style={{ fontSize: 12, fontWeight: 600, color: C.green, display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Root cause identified</label>
+              <TextArea value={rootCause} onChange={setRootCause} placeholder="The real underlying cause..." rows={2} />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, fontWeight: 600, color: C.amber, display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.05em' }}>The fix (one rule or one process change)</label>
+              <TextArea value={fix} onChange={setFix} placeholder="e.g. Rule: I move stop to breakeven once price reaches +1.5R, no exceptions" rows={2} />
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
+            <Btn onClick={saveSession} disabled={!mistake.trim()}><IconCheck size={14} /> Save diagnosis</Btn>
+            <Btn variant="ghost" onClick={() => setShowNew(false)}><IconX size={14} /> Cancel</Btn>
+          </div>
+        </Card>
+      )}
+
+      {/* TraderDoc AI — shown after the worksheet, free gets locked preview */}
+      <TraderDocAI isPro={isPro} mistake={mistake} whys={whys} />
+
+      {/* Past sessions */}
+      {sessions.length === 0 && !showNew && (
+        <Card style={{ textAlign: 'center', padding: '2rem' }}>
+          <div style={{ color: C.textFaint, fontSize: 14 }}>No diagnoses yet.</div>
+          <div style={{ color: C.textFaint, fontSize: 12, marginTop: 4 }}>Run your first five-why at the end of this week.</div>
+        </Card>
+      )}
+
+      {sessions.map(s => (
+        <Card key={s.id}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+            <div>
+              <div style={{ fontSize: 11, color: C.textFaint, marginBottom: 4 }}>{fmtDate(s.date)}</div>
+              <div style={{ fontWeight: 600, fontSize: 14, color: C.text, lineHeight: 1.4 }}>{s.mistake}</div>
+            </div>
+            <button onClick={() => setSessions(prev => prev.filter(x => x.id !== s.id))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.textFaint }}>
+              <IconX size={14} />
+            </button>
+          </div>
+          {s.whys.map((w, i) => w.trim() && (
+            <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 6 }}>
+              <div style={{ width: 20, height: 20, borderRadius: '50%', background: WHY_COLORS[i] + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, fontFamily: FONT_MONO, color: WHY_COLORS[i], flexShrink: 0, marginTop: 2 }}>{i + 1}</div>
+              <div style={{ fontSize: 13, color: C.textDim, lineHeight: 1.5 }}>{w}</div>
+            </div>
+          ))}
+          {s.rootCause && (
+            <div style={{ marginTop: 10, background: C.green + '11', border: `1px solid ${C.green}33`, borderRadius: 8, padding: '8px 12px' }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: C.green, marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Root cause</div>
+              <div style={{ fontSize: 13, color: C.text }}>{s.rootCause}</div>
+            </div>
+          )}
+          {s.fix && (
+            <div style={{ marginTop: 8, background: C.amber + '11', border: `1px solid ${C.amber}33`, borderRadius: 8, padding: '8px 12px' }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: C.amber, marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.04em' }}>The fix</div>
+              <div style={{ fontSize: 13, color: C.text }}>{s.fix}</div>
+            </div>
+          )}
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+// ─── TAB: Small Wins ──────────────────────────────────────────────────────────
+function WinsTab({ isPro }) {
+  const WEEKS = 4;
+  const [wins, setWins] = useState(() => load('wins', Array.from({ length: WEEKS }, (_, i) => ({
+    id: `w${i}`, week: weekLabel(-WEEKS + 1 + i), goal: '', measure: '', achieved: null, mistakeFixed: '', rootCause: ''
+  }))));
+
+  useEffect(() => { save('wins', wins); }, [wins]);
+
+  function update(id, field, val) {
+    setWins(prev => prev.map(w => w.id === id ? { ...w, [field]: val } : w));
+  }
+
+  const achieved = wins.filter(w => w.achieved === true).length;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 17 }}>Small Win Tracker</div>
+          <div style={{ fontSize: 13, color: C.textDim, marginTop: 2 }}>Behaviour goals — not P&L goals. 100% in your control.</div>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ fontFamily: FONT_MONO, fontSize: 22, fontWeight: 700, color: C.green }}>{achieved}/{WEEKS}</div>
+          <div style={{ fontSize: 11, color: C.textDim }}>wins stacked</div>
+        </div>
+      </div>
+
+      {wins.map((w, i) => {
+        const isCurrentWeek = weekLabel() <= w.week && w.week <= weekLabel();
+        return (
+          <Card key={w.id} style={{ borderColor: isCurrentWeek ? C.amber + '66' : C.border }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: w.achieved === true ? C.green + '22' : C.panel2, border: `1px solid ${w.achieved === true ? C.green : C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, fontFamily: FONT_MONO, color: w.achieved === true ? C.green : C.textFaint }}>{i + 1}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: isCurrentWeek ? C.amber : C.textDim }}>
+                  Week of {fmtDate(w.week)}{isCurrentWeek ? ' · Current' : ''}
+                </div>
+              </div>
+              {w.achieved !== null && <Badge color={w.achieved ? C.green : C.red}>{w.achieved ? 'Achieved ✓' : 'Not yet'}</Badge>}
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div>
+                <label style={{ fontSize: 11, fontWeight: 600, color: C.textDim, display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.05em' }}>My small win this week</label>
+                <TextArea value={w.goal} onChange={val => update(w.id, 'goal', val)} placeholder="e.g. Check consecutive win count before every trade and hold size constant" rows={2} />
+              </div>
+              <div>
+                <label style={{ fontSize: 11, fontWeight: 600, color: C.textDim, display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.05em' }}>How I will measure it</label>
+                <Input value={w.measure} onChange={val => update(w.id, 'measure', val)} placeholder="e.g. Review my size on every trade at end of each session" />
+              </div>
+              <div>
+                <label style={{ fontSize: 11, fontWeight: 600, color: C.textDim, display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Mistake fixed</label>
+                <Input value={w.mistakeFixed} onChange={val => update(w.id, 'mistakeFixed', val)} placeholder="e.g. Oversizing after consecutive wins" />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+              <Btn size="sm" variant={w.achieved === true ? 'primary' : 'secondary'} onClick={() => update(w.id, 'achieved', true)}>
+                <IconCheck size={13} /> Yes
+              </Btn>
+              <Btn size="sm" variant={w.achieved === false ? 'danger' : 'ghost'} onClick={() => update(w.id, 'achieved', false)}>
+                <IconX size={13} /> Not yet
+              </Btn>
+            </div>
+          </Card>
+        );
+      })}
+
+      {!isPro && <ProLock feature="90-day win history + pattern intelligence" />}
+    </div>
+  );
+}
+
+// ─── TAB: Patterns ────────────────────────────────────────────────────────────
+function PatternsTab({ isPro }) {
+  const entries  = load('log', []);
+  const sessions = load('fivewhy', []);
+  const wins     = load('wins', []);
+
+  // Simple word frequency to surface themes
+  const topWords = useMemo(() => {
+    const stop = new Set(['i','a','the','to','my','at','on','in','of','and','or','but','it','was','did','not','after','before','when','too','had','have','that','this','with','for','is','me','an','so','then','by','be','from','into','out','just','back','up','its','has','more','into','went','re','got']);
+    const freq = {};
+    entries.forEach(e => {
+      e.text.toLowerCase().split(/\W+/).filter(w => w.length > 3 && !stop.has(w)).forEach(w => {
+        freq[w] = (freq[w] || 0) + 1;
+      });
+    });
+    return Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 12);
+  }, [entries]);
+
+  const recentEntries = useMemo(() => {
+    const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7);
+    const c = cutoff.toISOString().slice(0, 10);
+    return entries.filter(e => e.date >= c).length;
+  }, [entries]);
+
+  const totalFixed = wins.filter(w => w.achieved === true).length;
+  const totalDiag  = sessions.length;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 17 }}>Pattern Intelligence</div>
+
+      {/* Summary stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
+        {[
+          { label: 'Total mistakes logged', value: entries.length, color: C.textDim },
+          { label: 'Diagnoses run', value: totalDiag, color: C.blue },
+          { label: 'Wins stacked', value: totalFixed, color: C.green },
+        ].map(s => (
+          <Card key={s.label} style={{ textAlign: 'center', padding: '1rem' }}>
+            <div style={{ fontSize: 26, fontWeight: 700, fontFamily: FONT_MONO, color: s.color }}>{s.value}</div>
+            <div style={{ fontSize: 11, color: C.textFaint, marginTop: 4 }}>{s.label}</div>
+          </Card>
+        ))}
+      </div>
+
+      {/* Recurring themes */}
+      <Card>
+        <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 15, marginBottom: 4 }}>Recurring themes</div>
+        <div style={{ fontSize: 12, color: C.textDim, marginBottom: 14 }}>Most frequent words in your mistake log — surface patterns you might not see.</div>
+        {topWords.length === 0 ? (
+          <div style={{ color: C.textFaint, fontSize: 13 }}>Log at least 5 mistakes to see themes.</div>
+        ) : (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {topWords.map(([word, count]) => (
+              <div key={word} style={{ background: C.panel2, border: `1px solid ${C.border}`, borderRadius: 20, padding: '4px 12px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 13, color: C.text }}>{word}</span>
+                <span style={{ fontSize: 11, fontFamily: FONT_MONO, color: C.amber }}>{count}×</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+
+      {/* Root causes from five-whys */}
+      {sessions.length > 0 && (
+        <Card>
+          <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 15, marginBottom: 12 }}>Root causes found</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {sessions.filter(s => s.rootCause).slice(0, isPro ? 999 : 3).map(s => (
+              <div key={s.id} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', background: C.panel2, borderRadius: 8, padding: '10px 12px' }}>
+                <IconChevronR size={14} style={{ color: C.green, flexShrink: 0, marginTop: 2 }} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 12, color: C.textFaint, marginBottom: 2 }}>{fmtDate(s.date)}</div>
+                  <div style={{ fontSize: 13, color: C.text }}>{s.rootCause}</div>
+                  {s.fix && <div style={{ fontSize: 12, color: C.amber, marginTop: 4 }}>Fix: {s.fix}</div>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {!isPro && <ProLock feature="Full pattern intelligence — AI-identified themes across 90 days" />}
+    </div>
+  );
+}
+
+// ─── Main App ─────────────────────────────────────────────────────────────────
+function App() {
+  const [tab, setTab]     = useState('log');
+  const [isPro, setIsPro] = useState(() => load('isPro', false));
+
+  const tabComponents = {
+    log:      <LogTab isPro={isPro} />,
+    fivewhy:  <FiveWhyTab isPro={isPro} />,
+    wins:     <WinsTab isPro={isPro} />,
+    patterns: <PatternsTab isPro={isPro} />,
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', background: C.bg, fontFamily: FONT_BODY }}>
+      {/* Header */}
+      <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, position: 'sticky', top: 0, zIndex: 100 }}>
+        <div style={{ maxWidth: 720, margin: '0 auto', padding: '0 1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ width: 32, height: 32, background: C.amber, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <IconBrain size={16} style={{ color: '#11151C' }} />
+              </div>
+              <div>
+                <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 14, color: C.text }}>NIG TraderDoc</div>
+                <div style={{ fontSize: 10, color: C.textFaint, marginTop: -1 }}>TradeRoot</div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {isPro ? (
+                <Badge color={C.green}>Pro</Badge>
+              ) : (
+                <Badge color={C.textDim}>Free</Badge>
+              )}
+              {/* Dev toggle — remove before production */}
+              {!isPro && (
+                <button onClick={() => { setIsPro(true); save('isPro', true); }}
+                  style={{ background: C.amber + '22', border: `1px solid ${C.amber}44`, borderRadius: 8, padding: '4px 10px', fontSize: 11, color: C.amber, cursor: 'pointer', fontFamily: FONT_BODY, fontWeight: 600 }}>
+                  Try Pro
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <div style={{ display: 'flex', gap: 0, overflowX: 'auto' }}>
+            {TABS.map(t => {
+              const Icon = t.icon;
+              const active = tab === t.id;
+              return (
+                <button key={t.id} onClick={() => setTab(t.id)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontFamily: FONT_BODY, fontWeight: active ? 600 : 400, color: active ? C.amber : C.textDim, borderBottom: `2px solid ${active ? C.amber : 'transparent'}`, whiteSpace: 'nowrap', transition: 'color 0.15s' }}>
+                  <Icon size={14} />
+                  {t.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '1.5rem 1rem 4rem' }}>
+        <WhatsAppBanner />
+        {tabComponents[tab]}
+      </div>
+
+      {/* Footer */}
+      <div style={{ borderTop: `1px solid ${C.border}`, padding: '1.25rem 1rem', textAlign: 'center' }}>
+        <div style={{ fontSize: 12, color: C.textFaint, marginBottom: 8 }}>
+          NIG TraderDoc · TradeRoot · <a href="https://livetradingcoaching.com" target="_blank" style={{ color: C.textFaint }}>livetradingcoaching.com</a>
+          {!isPro && <> · <a href="https://offers.livetradingcoaching.com/trader-performance-booster" target="_blank" style={{ color: C.amber }}>Upgrade to Pro — $29/mo</a></>}
+        </div>
+        <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#075E5422', border: '1px solid #128C7E55', borderRadius: 20, padding: '5px 14px', fontSize: 12, color: '#25D366', textDecoration: 'none', fontWeight: 600 }}>
+          💬 Free NIG Trader Community — YouTube drops &amp; training alerts on WhatsApp
+        </a>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
